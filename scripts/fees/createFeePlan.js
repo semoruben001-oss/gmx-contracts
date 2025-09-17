@@ -336,7 +336,7 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
 
   if (remainingWavax.lt(0)) {
     if (treasuryWavaxAmount.lt(remainingWavax.abs())) {
-      throw new Error(`Insufficient treasuryWavaxAmount to cover costs ${treasuryWavaxAmount.toString()}, ${treasuryWavaxAmount.toString()}`)
+      throw new Error(`Insufficient treasuryWavaxAmount to cover costs ${treasuryWavaxAmount.toString()}, ${remainingWavax.toString()}`)
     }
 
     treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())

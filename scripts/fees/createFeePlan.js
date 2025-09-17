@@ -293,10 +293,12 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
 
   console.log("remainingWeth after treasury subsidy", remainingWeth.toString())
 
-  const remainingPercentageWeth = remainingWeth.mul(100).div(expectedGlpWethAmount)
-  console.log("remainingPercentageWeth", remainingPercentageWeth.toString(), ARB_MIN_GLP_PERCENTAGE)
-  if (remainingPercentageWeth.lt(ARB_MIN_GLP_PERCENTAGE)) {
-    throw new Error(`GLP fees are less than ${ARB_MIN_GLP_PERCENTAGE} % of expected on Arbitrum. Adjust the multiplier.`)
+  if (expectedGlpWethAmount.gt(0)) {
+    const remainingPercentageWeth = remainingWeth.mul(100).div(expectedGlpWethAmount)
+    console.log("remainingPercentageWeth", remainingPercentageWeth.toString(), ARB_MIN_GLP_PERCENTAGE)
+    if (remainingPercentageWeth.lt(ARB_MIN_GLP_PERCENTAGE)) {
+      throw new Error(`GLP fees are less than ${ARB_MIN_GLP_PERCENTAGE} % of expected on Arbitrum. Adjust the multiplier.`)
+    }
   }
 
   const totalWavaxAvailable = values.avax.totalNativeTokenBalance
@@ -343,11 +345,13 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
 
   const expectedGlpWavaxAmount = totalWavaxAvailable.sub(treasuryChainlinkWavaxAmount)
 
-  const remainingPercentageWavax = remainingWavax.mul(100).div(expectedGlpWavaxAmount)
-  console.log("remainingPercentageWavax", remainingPercentageWavax.toString(), AVAX_MIN_GLP_PERCENTAGE)
+  if (expectedGlpWavaxAmount.gt(0)) {
+    const remainingPercentageWavax = remainingWavax.mul(100).div(expectedGlpWavaxAmount)
+    console.log("remainingPercentageWavax", remainingPercentageWavax.toString(), AVAX_MIN_GLP_PERCENTAGE)
 
-  if (remainingWavax.mul(100).div(expectedGlpWavaxAmount).lt(AVAX_MIN_GLP_PERCENTAGE)) {
-    throw new Error(`GLP fees are less than ${AVAX_MIN_GLP_PERCENTAGE} % of expected on Avalanche. Adjust the multiplier.`)
+    if (remainingPercentageWavax.lt(AVAX_MIN_GLP_PERCENTAGE)) {
+      throw new Error(`GLP fees are less than ${AVAX_MIN_GLP_PERCENTAGE} % of expected on Avalanche. Adjust the multiplier.`)
+    }
   }
 
   const totalArbGmxAvailable = values.arbitrum.totalGmxBalance

@@ -338,14 +338,13 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
     const wavax = await contractAt(
       "WETH",
       "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-      handler
     );
 
     if (treasuryWavaxAmount.gt(remainingWavax.abs())) {
       treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())
       remainingWavax = bigNumberify(0)
     } else {
-      const feeHandlerWavaxBalance = await wavax.balanceOf(handler.address)
+      const feeHandlerWavaxBalance = await wavax.balanceOf("0x43CE1d475e06c65DD879f4ec644B8e0E10ff2b6D")
       remainingWavax = remainingWavax.sub(treasuryWavaxAmount)
       if (remainingWavax.gt(feeHandlerWavaxBalance)) {
         throw new Error(`Insufficient feeHandlerWavaxBalance to cover costs ${feeHandlerWavaxBalance.toString()}, ${remainingWavax.toString()}`)

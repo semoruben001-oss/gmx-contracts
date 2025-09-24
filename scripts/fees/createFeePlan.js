@@ -302,7 +302,7 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
     }
   }
 
-  const totalWavaxAvailable = values.avax.totalNativeTokenBalance
+  let totalWavaxAvailable = values.avax.totalNativeTokenBalance
   const wavaxPrice = values.avax.nativeTokenPrice
   const totalWavaxUsdValue = totalWavaxAvailable.mul(wavaxPrice)
 

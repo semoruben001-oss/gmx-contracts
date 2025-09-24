@@ -349,6 +349,19 @@ contract GmxTimelock is IGmxTimelock {
         ITimelockTarget(_target).setGov(_gov);
     }
 
+    function signalSetMinter(address _target, address _minter, bool _isActive) external onlyAdmin {
+        bytes32 action = keccak256(abi.encodePacked("setMinter", _target, _minter, _isActive));
+        _setPendingAction(action);
+        emit SignalSetMinter(_target, _minter, _isActive, action);
+    }
+
+    function setMinter(address _target, address _minter, bool _isActive) external onlyAdmin {
+        bytes32 action = keccak256(abi.encodePacked("setMinter", _target, _minter, _isActive));
+        _validateAction(action);
+        _clearAction(action);
+        IMintable(_target).setMinter(_minter, _isActive);
+    }
+
     function signalSetPriceFeed(address _vault, address _priceFeed) external onlyAdmin {
         bytes32 action = keccak256(abi.encodePacked("setPriceFeed", _vault, _priceFeed));
         _setPendingAction(action);

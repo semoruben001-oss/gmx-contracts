@@ -10,7 +10,7 @@ async function runForArbitrum() {
   const rewardManager = { address: AddressZero }
   const buffer = 24 * 60 * 60
   const longBuffer = 7 * 24 * 60 * 60
-  const tokenManager = { address: "0xddDc546e07f1374A07b270b7d863371e575EA96A" }
+  const tokenManager = { address: "0x8D1d2e24eC641eDC6a1ebe0F3aE7af0EBC573e0D" }
   const mintReceiver = { address: AddressZero }
   const maxTokenSupply = expandDecimals("13250000", 18)
 
@@ -30,7 +30,7 @@ async function runForAvax() {
   const rewardManager = { address: ethers.constants.AddressZero }
   const buffer = 24 * 60 * 60
   const longBuffer = 7 * 24 * 60 * 60
-  const tokenManager = { address: "0x8b25Ba1cAEAFaB8e9926fabCfB6123782e3B4BC2" }
+  const tokenManager = { address: "0x8D1d2e24eC641eDC6a1ebe0F3aE7af0EBC573e0D" }
   const mintReceiver = { address: AddressZero }
   const maxTokenSupply = expandDecimals("13250000", 18)
 
@@ -48,10 +48,9 @@ async function runForAvax() {
 async function main() {
   if (network === "avax") {
     await runForAvax()
-    return
+  } else {
+    await runForArbitrum()
   }
-
-  await runForArbitrum()
 }
 
 main()

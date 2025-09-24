@@ -336,12 +336,11 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   remainingWavax = remainingWavax.sub(referralRewardsWavax)
 
   if (remainingWavax.lt(0)) {
-    const avax = new ethers.Contract("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", WETH.abi, providers.avax)
-
     if (treasuryWavaxAmount.gt(remainingWavax.abs())) {
       treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())
       remainingWavax = bigNumberify(0)
     } else {
+      const wavax = new ethers.Contract("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", WETH.abi, providers.avax)
       const feeHandlerWavaxBalance = await wavax.balanceOf("0x43CE1d475e06c65DD879f4ec644B8e0E10ff2b6D")
       remainingWavax = remainingWavax.sub(treasuryWavaxAmount)
       if (remainingWavax.gt(feeHandlerWavaxBalance)) {

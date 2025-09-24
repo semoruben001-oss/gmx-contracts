@@ -342,11 +342,11 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
     } else {
       const wavax = new ethers.Contract("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", WETH.abi, providers.avax)
       const feeHandlerWavaxBalance = await wavax.balanceOf("0x43CE1d475e06c65DD879f4ec644B8e0E10ff2b6D")
-      remainingWavax = remainingWavax.sub(treasuryWavaxAmount)
-      if (remainingWavax.gt(feeHandlerWavaxBalance)) {
+      remainingWavax = remainingWavax.add(treasuryWavaxAmount)
+      if (remainingWavax.abs().gt(feeHandlerWavaxBalance)) {
         throw new Error(`Insufficient feeHandlerWavaxBalance to cover costs ${feeHandlerWavaxBalance.toString()}, ${remainingWavax.toString()}`)
       }
-      totalWavaxAvailable = totalWavaxAvailable.add(remainingWavax)
+      totalWavaxAvailable = totalWavaxAvailable.add(remainingWavax.abs())
       treasuryWavaxAmount = bigNumberify(0)
       remainingWavax = bigNumberify(0)
     }

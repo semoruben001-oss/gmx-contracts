@@ -346,6 +346,7 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
       if (remainingWavax.gt(feeHandlerWavaxBalance)) {
         throw new Error(`Insufficient feeHandlerWavaxBalance to cover costs ${feeHandlerWavaxBalance.toString()}, ${remainingWavax.toString()}`)
       }
+      totalWavaxAvailable = totalWavaxAvailable.add(remainingWavax)
       treasuryWavaxAmount = bigNumberify(0)
       remainingWavax = bigNumberify(0)
     }

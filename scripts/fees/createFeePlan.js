@@ -335,12 +335,24 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   remainingWavax = remainingWavax.sub(referralRewardsWavax)
 
   if (remainingWavax.lt(0)) {
-    if (treasuryWavaxAmount.lt(remainingWavax.abs())) {
-      throw new Error(`Insufficient treasuryWavaxAmount to cover costs ${treasuryWavaxAmount.toString()}, ${remainingWavax.toString()}`)
-    }
+    const wavax = await contractAt(
+      "WETH",
+      "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      handler
+    );
 
-    treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())
-    remainingWavax = bigNumberify(0)
+    if (treasuryWavaxAmount.gt(remainingWavax.abs())) {
+      treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())
+      remainingWavax = bigNumberify(0)
+    } else {
+      const feeHandlerWavaxBalance = await wavax.balanceOf(handler.address)
+      remainingWavax = remainingWavax.sub(treasuryWavaxAmount)
+      if (remainingWavax.gt(feeHandlerWavaxBalance)) {
+        throw new Error(`Insufficient feeHandlerWavaxBalance to cover costs ${feeHandlerWavaxBalance.toString()}, ${remainingWavax.toString()}`)
+      }
+      treasuryWavaxAmount = bigNumberify(0)
+      remainingWavax = bigNumberify(0)
+    }
   }
 
   const expectedGlpWavaxAmount = totalWavaxAvailable.sub(treasuryChainlinkWavaxAmount)

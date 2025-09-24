@@ -14,23 +14,19 @@ async function main() {
     const avalancheV2 = await processPeriodV2(relativePeriodName, "avalanche");
     table.cell("Chain", "Arbitrum");
     table.cell("Version", "v1");
-    table.cell("Fees", arbitrumV1.fees, formatUsd);
-    table.cell("Where", arbitrumV1.where);
+    table.cell("Fees", arbitrumV1, formatUsd);
     table.newRow();
     table.cell("Chain", "Arbitrum");
     table.cell("Version", "v2");
-    table.cell("Fees", arbitrumV2.fees, formatUsd);
-    table.cell("Where", arbitrumV2.where);
+    table.cell("Fees", arbitrumV2, formatUsd);
     table.newRow();
     table.cell("Chain", "Avalanche");
     table.cell("Version", "v1");
-    table.cell("Fees", avalancheV1.fees, formatUsd);
-    table.cell("Where", avalancheV1.where);
+    table.cell("Fees", avalancheV1, formatUsd);
     table.newRow();
     table.cell("Chain", "Avalanche");
     table.cell("Version", "v2");
-    table.cell("Fees", avalancheV2.fees, formatUsd);
-    table.cell("Where", avalancheV2.where);
+    table.cell("Fees", avalancheV2, formatUsd);
     table.newRow();
 
     console.log(table.toString());
@@ -42,9 +38,9 @@ const fetch = async (...args) => {
   return (await import("node-fetch")).default(...args);
 };
 
-const fetchGql = async (url, gql) => {
+const fetchGql = async (slug, gql) => {
   return fetch(
-    `https://subgraph.satsuma-prod.com/3b2ced13c8d9/gmx/${url}/api`,
+    `https://subgraph.satsuma-prod.com/3b2ced13c8d9/gmx/${slug}/api`,
     {
       body: JSON.stringify({ query: gql }),
       method: "POST",
@@ -97,7 +93,7 @@ async function processPeriodV1(relativePeriodName, chainName) {
     0n
   );
 
-  return bigNumberify(total)
+  return bigNumberify(total);
 }
 
 async function processPeriodV2(relativePeriodName, chainName) {
@@ -110,6 +106,7 @@ async function processPeriodV2(relativePeriodName, chainName) {
         position: positionFeesInfoWithPeriods(where: { ${where} }) {
             totalBorrowingFeeUsd
             totalPositionFeeUsd
+            totalLiquidationFeeUsd
         }
 
         swap: swapFeesInfoWithPeriods(where: { ${where} }) {
@@ -126,7 +123,10 @@ async function processPeriodV2(relativePeriodName, chainName) {
 
   const positionFees = positionStats.reduce((acc, stat) => {
     return (
-      acc + BigInt(stat.totalBorrowingFeeUsd) + BigInt(stat.totalPositionFeeUsd)
+      acc +
+      BigInt(stat.totalBorrowingFeeUsd) +
+      BigInt(stat.totalPositionFeeUsd) +
+      BigInt(stat.totalLiquidationFeeUsd)
     );
   }, 0n);
 
@@ -136,7 +136,7 @@ async function processPeriodV2(relativePeriodName, chainName) {
     );
   }, 0n);
 
-  return bigNumberify(positionFees + swapFees)
+  return bigNumberify(positionFees + swapFees);
 }
 
 function dateToSeconds(date) {

@@ -28,6 +28,7 @@ if (FEE_KEEPER === undefined) {
 }
 
 const DataStore = require("../../artifacts-v2/contracts/data/DataStore.sol/DataStore.json")
+const WETH = require("../../artifacts/contracts/tokens/WETH.sol/WETH.json")
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 const MILLISECONDS_PER_WEEK = 7 * MILLISECONDS_PER_DAY
@@ -335,11 +336,7 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   remainingWavax = remainingWavax.sub(referralRewardsWavax)
 
   if (remainingWavax.lt(0)) {
-    const wavax = await contractAt(
-      "WETH",
-      "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-      providers.avax
-    );
+    const avax = new ethers.Contract("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", WETH.abi, providers.avax)
 
     if (treasuryWavaxAmount.gt(remainingWavax.abs())) {
       treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())

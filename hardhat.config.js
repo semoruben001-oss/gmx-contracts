@@ -1,5 +1,5 @@
 require("@nomiclabs/hardhat-waffle")
-require("@nomiclabs/hardhat-etherscan")
+require("@nomicfoundation/hardhat-verify")
 require("hardhat-contract-sizer")
 require('@typechain/hardhat')
 
@@ -24,6 +24,27 @@ const {
   MAINNET_URL,
   MAINNET_DEPLOY_KEY
 } = require("./env.json")
+
+const getNetworkFromCLI = () => {
+  const i = process.argv.indexOf("--network");
+  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "hardhat";
+};
+
+const HARDHAT_NETWORK = getNetworkFromCLI();
+
+const getEtherscanApiKey = () => {
+  if (["arbitrum"].includes(HARDHAT_NETWORK)) {
+    return ARBISCAN_API_KEY;
+  }
+
+  return {
+    mainnet: ETHERSCAN_API_KEY,
+    arbitrumOne: ARBISCAN_API_KEY,
+    avalanche: SNOWTRACE_API_KEY,
+    bsc: BSCSCAN_API_KEY,
+    polygon: POLYGONSCAN_API_KEY,
+  };
+};
 
 const getEnvAccounts = (DEFAULT_DEPLOYER_KEY) => {
   return [DEFAULT_DEPLOYER_KEY];
@@ -124,13 +145,10 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: {
-      mainnet: ETHERSCAN_API_KEY,
-      arbitrumOne: ARBISCAN_API_KEY,
-      avalanche: SNOWTRACE_API_KEY,
-      bsc: BSCSCAN_API_KEY,
-      polygon: POLYGONSCAN_API_KEY,
-    }
+    apiKey: getEtherscanApiKey(),
+  },
+  sourcify: {
+    enabled: true,
   },
   solidity: {
     version: "0.6.12",

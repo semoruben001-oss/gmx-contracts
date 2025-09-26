@@ -22,7 +22,7 @@ async function runForArbitrum() {
     tokenManager.address,
     mintReceiver.address,
     maxTokenSupply
-  ], "GmxTimelock", { gasLimit: 100000000 })
+  ], "GmxTimelock")
 }
 
 async function runForAvax() {
@@ -42,14 +42,16 @@ async function runForAvax() {
     tokenManager.address,
     mintReceiver.address,
     maxTokenSupply
-  ])
+  ], "GmxTimelock")
 }
 
 async function main() {
-  if (network === "avax") {
+  if (network === "arbitrum") {
+    await runForArbitrum()
+  } else if (network === "avax") {
     await runForAvax()
   } else {
-    await runForArbitrum()
+    throw new Error("Unsupported network")
   }
 }
 

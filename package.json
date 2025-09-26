@@ -14,7 +14,6 @@
   "license": "ISC",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",
-    "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/hardhat": "^2.3.0",
@@ -24,12 +23,13 @@
     "easy-table": "^1.2.0",
     "ethereum-waffle": "^4.0.10",
     "ethers": "^5.4.6",
-    "hardhat": "^2.6.1",
+    "hardhat": "^2.22.15",
     "hardhat-contract-sizer": "^2.0.3",
     "node-fetch": "3.2.3",
     "typechain": "^5.1.2"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-verify": "^2",
     "@synapseprotocol/sdk": "^0.94.1",
     "@uniswap/sdk-core": "^3.0.1",
     "@uniswap/v3-sdk": "^3.8.2",

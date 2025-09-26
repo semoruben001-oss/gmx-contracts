@@ -47,6 +47,7 @@ contract GmxTimelock is IGmxTimelock {
     event SignalWithdrawToken(address target, address token, address receiver, uint256 amount, bytes32 action);
     event SignalMint(address token, address receiver, uint256 amount, bytes32 action);
     event SignalSetGov(address target, address gov, bytes32 action);
+    event SignalSetMinter(address target, address minter, bool isActive, bytes32 action);
     event SignalSetPriceFeed(address vault, address priceFeed, bytes32 action);
     event SignalAddPlugin(address router, address plugin, bytes32 action);
     event SignalRedeemUsdg(address vault, address token, uint256 amount);

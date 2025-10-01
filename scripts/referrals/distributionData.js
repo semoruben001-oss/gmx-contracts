@@ -348,7 +348,7 @@ async function saveDistributionData(network, fromTimestamp, toTimestamp, account
   Object.entries(referralDiscountData).forEach(([account, data]) => {
     data.allReferralsDiscountUsd = allReferralsDiscountUsd
     data.account = account
-    data.share = data.discountUsd.mul(SHARE_DIVISOR).div(allReferralsDiscountUsd)
+    data.share = allReferralsDiscountUsd.eq(0) ? bigNumberify(0) : data.discountUsd.mul(SHARE_DIVISOR).div(allReferralsDiscountUsd)
   })
 
   console.log("Referrals (Traders):")

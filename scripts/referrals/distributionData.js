@@ -206,15 +206,19 @@ async function saveDistributionData(network, fromTimestamp, toTimestamp, account
     return memo
   }, {})
 
-  if (allAffiliatesRebateUsd.eq(0)) {
-    console.warn("No rebates on %s", network)
-    return
+  const hasV1Rebates = allAffiliatesRebateUsd.gt(0);
+
+  if (!hasV1Rebates) {
+    console.warn(
+      "No V1 rebates on %s; continuing to compute esGMX rewards (v1+v2)",
+      network
+    )
   }
 
   Object.entries(affiliatesRebatesData).forEach(([account, data]) => {
     data.allAffiliatesRebateUsd = allAffiliatesRebateUsd
     data.account = account
-    data.share = data.rebateUsd.mul(SHARE_DIVISOR).div(allAffiliatesRebateUsd)
+    data.share = hasV1Rebates ? data.rebateUsd.mul(SHARE_DIVISOR).div(allAffiliatesRebateUsd) : BigNumber.from(0)
   })
   if (gmxPrice && esgmxRewards) {
     const esgmxRewardsUsdLimit = esgmxRewards.mul(gmxPrice).div(expandDecimals(1, GMX_DECIMALS))

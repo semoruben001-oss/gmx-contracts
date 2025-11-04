@@ -11,6 +11,7 @@ async function waitForTxn(txn) {
   }
 }
 
+// TODO: use https://scan.layerzero-api.com/v1/swagger to query bridging status
 async function waitForReceiptOnDesChain({ receiver, desRpcUrl }) {
   const provider = new ethers.JsonRpcProvider(desRpcUrl);
   const dstContract = new ethers.Contract(

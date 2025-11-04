@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@nomicfoundation/hardhat-verify": "^2",
+    "@stargatefinance/stg-evm-sdk-v2": "^1.2.2",
     "@synapseprotocol/sdk": "^0.94.1",
     "@uniswap/sdk-core": "^3.0.1",
     "@uniswap/v3-sdk": "^3.8.2",

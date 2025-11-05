@@ -438,6 +438,7 @@ async function distributeFees({ steps }) {
   }
 
   if (steps.includes(3)) {
+    // TODO: check GMX balance and wait for bridging if needed
     await updateGmxRewards();
     await printFeeHandlerBalances();
   }

@@ -10,6 +10,7 @@ const { expandDecimals, formatAmount, parseValue, bigNumberify } = require("../.
 const { saveDistributionData } = require("../referrals/distributionData")
 const { ARBITRUM, signers, contractAt } = require("../shared/helpers")
 const keys = require("../shared/keys")
+const feePlan = require("../../fee-plan.json");
 
 const {
   ARBITRUM_URL,
@@ -506,6 +507,10 @@ async function createReferralRewardsRef({ refTimestamp, gmxPrice }) {
 
 async function main() {
   const { refTimestamp } = getRefTime()
+  if (feePlan && (refTimestamp - feePlan.refTimestamp) < 86400) {
+    throw new Error("Fee plan for week already exists")
+  }
+
   const feeValues = await getFeeValues()
   console.log("feeValues", feeValues)
   console.log("feeValues.gmxPrice", feeValues.gmxPrice.toString())

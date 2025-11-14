@@ -71,15 +71,19 @@ async function getFrameSigner(options) {
   }
 }
 
-async function sendTxn(txnPromise, label) {
-  console.info(`Processsing ${label}:`)
-  const txn = await txnPromise
-  console.info(`Sending ${label}...`)
+async function waitForTxn(txn) {
   if (network === "arbitrum") {
     await txn.wait(1)
   } else {
     await txn.wait(2)
   }
+}
+
+async function sendTxn(txnPromise, label) {
+  console.info(`Processsing ${label}:`)
+  const txn = await txnPromise
+  console.info(`Sending ${label}...`)
+  await waitForTxn(txn)
   console.info(`... Sent! ${txn.hash}`)
   return txn
 }
@@ -187,6 +191,7 @@ module.exports = {
   readCsv,
   getFrameSigner,
   sendTxn,
+  waitForTxn,
   deployContract,
   contractAt,
   writeTmpAddresses,

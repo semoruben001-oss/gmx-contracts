@@ -1,107 +1,101 @@
-require("dotenv").config();
-const { ethers } = require("ethers");
-const { StargateEVM, ChainIds } = require("@stargatefinance/stg-evm-sdk-v2");
-const { sleep } = require("./helpers")
+const bs58 = require('bs58')
+const { hexZeroPad } = require('@ethersproject/bytes')
+const { BigNumber } = require('ethers')
+const { parseUnits } = require('ethers/lib/utils')
 
-async function waitForTxn(txn) {
-  if (network === "arbitrum") {
-    await txn.wait(1)
+const { ChainType, endpointIdToChainType, endpointIdToNetwork } = require('@layerzerolabs/lz-definitions')
+const { waitForTxn } = require("./helpers")
+
+const layerzeroConfig = require('./layerzero')
+const ERC20MinimalABI = require('../../abi/ERC20Minimal.json')
+const IOFTArtifact = require('../../abi/IOFT.json')
+
+const makeBytes32 = (bytes) => hexZeroPad(bytes || '0x0', 32)
+
+async function sendEvm(
+  { rpcUrl, key, srcWrapperAddress, srcEid, dstEid, amount, to, minAmount, extraOptions, composeMsg },
+  hre
+) {
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
+  const signer = new ethers.Wallet(key).connect(provider)
+
+  // 2️⃣ load IOFT ABI
+  // Use the minimal IOFT ABI with only the functions we need: token(), approvalRequired(), quoteSend(), send()
+  const oft = new ethers.Contract(srcWrapperAddress, IOFTArtifact, signer)
+
+  // 3️⃣ get underlying token address and create ERC20 contract
+  let tokenAddress
+  let decimals
+  let erc20Contract = null
+
+  try {
+    // Try to get token address (for adapters)
+    tokenAddress = await oft.token()
+    erc20Contract = new ethers.Contract(tokenAddress, ERC20MinimalABI, signer)
+    decimals = await erc20Contract.decimals()
+    console.info(`Found underlying token: ${tokenAddress} with ${decimals} decimals`)
+  } catch (error) {
+    // Fallback for native OFT or if token() doesn't exist
+    decimals = 18
+    console.info(`Using fallback decimals: ${decimals}`)
+  }
+
+  // 5️⃣ handle token approval if needed
+  if (erc20Contract && tokenAddress) {
+    const approveTx = await erc20Contract.connect(signer).approve(srcWrapperAddress, amount)
+    await waitForTxn(approveTx)
+    console.info(`Approved ${amount} tokens for ${srcWrapperAddress}`)
+  }
+
+  // Decide how to encode `to` based on target chain:
+  const dstChain = endpointIdToChainType(dstEid)
+  let toBytes
+  if (dstChain === ChainType.SOLANA) {
+    // Base58→32-byte buffer
+    toBytes = makeBytes32(bs58.decode(to))
   } else {
-    await txn.wait(2)
-  }
-}
-
-// TODO: use https://scan.layerzero-api.com/v1/swagger to query bridging status
-async function waitForReceiptOnDesChain({ receiver, desRpcUrl }) {
-  const provider = new ethers.JsonRpcProvider(desRpcUrl);
-  const dstContract = new ethers.Contract(
-    dstToken.address,
-    ["function balanceOf(address) view returns (uint256)"],
-    provider
-  );
-
-  const startBal = await dstContract.balanceOf(receiver);
-  const timeoutMs = 600_000; // 10 minutes
-  const intervalMs = 10_000; // 10s
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < timeoutMs) {
-    const newBal = await dstContract.balanceOf(receiver);
-    if (newBal > startBal) {
-      console.log(
-        `GMX received on destination chain`
-      );
-      return;
-    }
-    process.stdout.write(".");
-    await sleep(intervalMs)
+    // hex string → Uint8Array → zero-pad to 32 bytes
+    toBytes = makeBytes32(to)
   }
 
-  throw new Error("GMX not received on destination chain")
-}
-
-async function bridge({ network, rpcUrl, desRpcUrl, key, srcChainName, desChainName, tokenAddress, desTokenAddress, receiver, amount }) {
-  // --- wallet & provider ---
-  const provider = new ethers.JsonRpcProvider(rpcUrl);
-  const wallet = new ethers.Wallet(key, provider);
-
-  // --- initialize Stargate SDK ---
-  const stargate = new StargateEVM({ signer: wallet });
-
-  // --- define chains ---
-  const srcChain = ChainIds[srcChainName];
-  const dstChain = ChainIds[desChainName];
-
-  const token = {
-    chainId: srcChain,
-    address: tokenAddress,
-    decimals: 18,
-    symbol: "GMX",
-    name: "GMX",
-  };
-
-  console.log("Fetching quote...");
-
-  // --- quote route ---
-  const quote = await stargate.quote({
-    srcChain,
-    dstChain,
-    token,
-    amount,
-    slippageBps: 50, // 0.5 %
-  });
-
-  console.log("Quote:", quote);
-
-  // --- approve if needed ---
-  const allowance = await stargate.checkApproval(token, srcChain);
-  if (allowance < amount) {
-    const approveTx = await stargate.approve(token, srcChain, amount);
-    if (network === "arbitrum") {
-      await approveTx.wait(1)
-    } else {
-      await approveTx.wait(2)
-    }
-    console.log("Approved");
+  // 6️⃣ build sendParam and dispatch
+  const sendParam = {
+    dstEid,
+    to: toBytes,
+    amountLD: amount.toString(),
+    minAmountLD: minAmount,
+    extraOptions: extraOptions ? extraOptions.toString() : '0x',
+    composeMsg: composeMsg ? composeMsg.toString() : '0x',
+    oftCmd: '0x',
   }
 
-  // --- execute bridge ---
-  const tx = await stargate.transfer({
-    srcChain,
-    dstChain,
-    token,
-    amount,
-    minAmountOut: quote.minAmountOut,
-    receiver,
-    route: quote.routeKey,
-    fee: quote.fee,
-  });
+  // 6️⃣ Quote (MessagingFee = { nativeFee, lzTokenFee })
+  console.info('Quoting the native gas cost for the send transaction...')
+  let msgFee
+  try {
+    msgFee = await oft.quoteSend(sendParam, false)
+  } catch (error) {
+    throw error
+  }
 
-  console.log("Bridge TX hash:", tx.hash);
-  await tx.wait();
-  console.log("✅ Bridge complete");
+  console.info('Sending the transaction...')
+  let tx
+  try {
+    // Connect signer and send transaction
+    const oftWithSigner = oft.connect(signer)
+    tx = await oftWithSigner.send(sendParam, msgFee, signer.address, {
+      value: msgFee.nativeFee,
+    })
+  } catch (error) {
+    throw error
+  }
 
-  await waitForReceiptOnDesChain({ receiver })
+  await waitForTxn(tx)
+  console.log(`sent txn: ${tx.hash}`)
+
+  return { txnHash: tx.hash }
 }
 
-main().catch(console.error);
+module.exports = {
+  sendEvm,
+}

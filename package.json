@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/hardhat": "^2.3.0",
@@ -22,7 +22,7 @@
     "date-fns": "^4.1.0",
     "easy-table": "^1.2.0",
     "ethereum-waffle": "^4.0.10",
-    "ethers": "^5.4.6",
+    "ethers": "^5.7.2",
     "hardhat": "^2.22.15",
     "hardhat-contract-sizer": "^2.0.3",
     "node-fetch": "3.2.3",
@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@nomicfoundation/hardhat-verify": "^2",
-    "@stargatefinance/stg-evm-sdk-v2": "^1.2.2",
     "@synapseprotocol/sdk": "^0.94.1",
     "@uniswap/sdk-core": "^3.0.1",
     "@uniswap/v3-sdk": "^3.8.2",
@@ -40,6 +39,9 @@
     "csv-parse": "^4.16.3",
     "express": "^4.19.2",
     "get-all-files": "^4.1.0",
-    "solidity-code-metrics": "^0.0.25"
+    "solidity-code-metrics": "^0.0.25",
+    "@layerzerolabs/devtools": "~0.4.8",
+    "@layerzerolabs/lz-v2-utilities": "^3.0.86",
+    "@layerzerolabs/metadata-tools": "^0.4.1"
   }
 }

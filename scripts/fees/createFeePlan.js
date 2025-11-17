@@ -385,6 +385,16 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
 
   const deltaRewardsArb = totalArbGmxAvailable.sub(requiredArbGmxRewards)
   const amountToBridge = deltaRewardsArb.abs()
+  let amountToBridgeFromArbritrum = bigNumberify(0)
+  let amountToBridgeFromAvalanche = bigNumberify(0)
+
+  if (deltaRewardsArb.gt(0)) {
+    amountToBridgeFromArbritrum = amountToBridge
+  }
+
+  if (deltaRewardsArb.lt(0)) {
+    amountToBridgeFromAvalanche = amountToBridge
+  }
 
   const data = {
     nativeTokenBalance: {
@@ -426,7 +436,9 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
     gmxPrice: values.gmxPrice.toString(),
     refTimestamp: refTimestamp,
     deltaRewardArb: deltaRewardsArb.toString(),
-    amountToBridge: amountToBridge.toString()
+    amountToBridge: amountToBridge.toString(),
+    amountToBridgeFromArbritrum: amountToBridgeFromArbritrum.toString(),
+    amountToBridgeFromAvalanche: amountToBridgeFromAvalanche.toString(),
   }
 
   const expectedNativeTokenBalance = {

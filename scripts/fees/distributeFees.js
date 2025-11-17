@@ -163,6 +163,37 @@ async function withdrawFeesFromFeeHandler({ network }) {
   }
 }
 
+async function bridgeTokens() {
+  if (bigNumberify(feePlan.amountToBridgeFromArbritrum).gt(0)) {
+    const amount = bigNumberify(feePlan.amountToBridgeFromArbritrum).toString()
+    await sendEvm({
+      rpcUrl: ARBITRUM_URL,
+      key: HANDLER_KEY,
+      srcWrapperAddress: "0x02984c3BB35F0e61cFC690f221A5EBCc5389f86b",
+      srcEid: "30110",
+      dstEid: "30106",
+      amount: amount,
+      to: feeKeepers.avax.address,
+      minAmount: amount
+    })
+  }
+
+  if (bigNumberify(feePlan.amountToBridgeFromAvalanche).gt(0)) {
+    const amount = bigNumberify(feePlan.amountToBridgeFromAvalanche)
+
+    await sendEvm({
+      rpcUrl: AVAX_URL,
+      key: HANDLER_KEY,
+      srcWrapperAddress: "0x02984c3BB35F0e61cFC690f221A5EBCc5389f86b",
+      srcEid: "30106",
+      dstEid: "30110",
+      amount: amount,
+      to: feeKeepers.arbitrum.address,
+      minAmount: amount
+    })
+  }
+}
+
 async function withdrawFees() {
   await withdrawFeesFromFeeHandler({ network: "arbitrum" });
   await withdrawFeesFromFeeHandler({ network: "avax" });
@@ -271,6 +302,32 @@ async function updateGmxRewards() {
   const gmxTokenBalance = {
     arbitrum: await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address),
     avax: await gmx.avax.balanceOf(feeKeepers.avax.address),
+  }
+
+  if (bigNumberify(feePlan.amountToBridgeFromAvalanche).gt(0)) {
+    while (true) {
+      if (gmxTokenBalance.arbitrum.gte(feePlan.gmxRewards.arbitrum)) {
+        break
+      }
+      console.log(`continue polling arbitrum gmx balance: ${gmxTokenBalance.arbitrum.toString()} < ${feePlan.gmxRewards.arbitrum}`)
+
+      await sleep(10_000)
+
+      gmxTokenBalance.arbitrum = await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address)
+    }
+  }
+
+  if (bigNumberify(feePlan.amountToBridgeFromArbritrum).gt(0)) {
+    while (true) {
+      if (gmxTokenBalance.avax.gte(feePlan.gmxRewards.avax)) {
+        break
+      }
+      console.log(`continue polling avax gmx balance: ${gmxTokenBalance.avax.toString()} < ${feePlan.gmxRewards.avax}`)
+
+      await sleep(10_000)
+
+      gmxTokenBalance.avax = await gmx.avax.balanceOf(feeKeepers.avax.address)
+    }
   }
 
   if (!skipBalanceValidations && gmxTokenBalance.arbitrum.lt(feePlan.gmxRewards.arbitrum)) {
@@ -430,30 +487,31 @@ async function distributeFees({ steps }) {
     await printFeeHandlerBalances();
   }
 
-  // TODO: handle case where tokens need to be bridged from Arbitrum to Avalanche
-
   if (steps.includes(2)) {
+    await bridgeTokens()
+  }
+
+  if (steps.includes(3)) {
     await fundAccounts();
     await printFeeHandlerBalances();
   }
 
-  if (steps.includes(3)) {
-    // TODO: check GMX balance and wait for bridging if needed
+  if (steps.includes(4)) {
     await updateGmxRewards();
     await printFeeHandlerBalances();
   }
 
-  if (steps.includes(4)) {
+  if (steps.includes(5)) {
     await sendPayments()
     await printFeeHandlerBalances();
   }
 
-  if (steps.includes(5)) {
+  if (steps.includes(6)) {
     await updateGlpRewards()
     await printFeeHandlerBalances();
   }
 
-  if (steps.includes(6)) {
+  if (steps.includes(7)) {
     await sendReferralRewards();
     await printFeeHandlerBalances();
   }

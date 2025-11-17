@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const parse = require('csv-parse')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const network = (process.env.HARDHAT_NETWORK || 'mainnet');
 
@@ -11,7 +12,9 @@ const {
   ARBITRUM_URL,
   AVAX_URL,
   ARBITRUM_DEPLOY_KEY,
-  AVAX_DEPLOY_KEY
+  AVAX_DEPLOY_KEY,
+  PUSH_TOKEN,
+  PUSH_USER
 } = require("../../env.json")
 
 const providers = {
@@ -41,6 +44,27 @@ const readCsv = async (file) => {
   }
   return records
 }
+
+async function sendPushMessage(title, message) {
+  const url = "https://api.pushover.net/1/messages.json";
+
+  const params = {
+    token: PUSH_TOKEN,
+    user: PUSH_USER,
+    message,
+    title
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params)
+  });
+
+  const data = await res.json();
+  console.log(data);
+}
+
 
 function getChainId(network) {
   if (network === "arbitrum") {
@@ -199,5 +223,6 @@ module.exports = {
   callWithRetries,
   processBatch,
   updateTokensPerInterval,
+  sendPushMessage,
   sleep
 }

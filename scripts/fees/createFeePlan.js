@@ -8,7 +8,7 @@ const { getArbValues: getArbReferralRewardValues, getAvaxValues: getAvaxReferral
 const { getArbValues: getArbKeeperValues, getAvaxValues: getAvaxKeeperValues } = require("../shared/fundAccountsUtils")
 const { expandDecimals, formatAmount, parseValue, bigNumberify } = require("../../test/shared/utilities")
 const { saveDistributionData } = require("../referrals/distributionData")
-const { ARBITRUM, signers, contractAt } = require("../shared/helpers")
+const { ARBITRUM, signers, contractAt, sendPushMessage } = require("../shared/helpers")
 const keys = require("../shared/keys")
 const feePlan = require("../../fee-plan.json");
 
@@ -538,6 +538,7 @@ async function main() {
   }
 
   await saveFeePlan({ feeValues, referralValues, refTimestamp })
+  await sendPushMessage("Fee Plan Created", "Step 0")
 }
 
 main()

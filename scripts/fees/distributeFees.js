@@ -5,6 +5,7 @@ const {
   sendTxn,
   getFrameSigner,
   sleep,
+  sendPushMessage
 } = require("../shared/helpers");
 
 const {
@@ -485,35 +486,41 @@ async function distributeFees({ steps }) {
   if (steps.includes(1)) {
     await withdrawFees();
     await printFeeHandlerBalances();
+    await sendPushMessage("Fees withdrawn", "Step 1")
   }
 
   if (steps.includes(2)) {
     await bridgeTokens()
+    await sendPushMessage("Tokens bridged", "Step 2")
   }
 
   if (steps.includes(3)) {
     await fundAccounts();
     await printFeeHandlerBalances();
+    await sendPushMessage("Accounts funded", "Step 3")
   }
 
   if (steps.includes(4)) {
     await updateGmxRewards();
     await printFeeHandlerBalances();
+    await sendPushMessage("GMX rewards updated", "Step 4")
   }
 
   if (steps.includes(5)) {
     await sendPayments()
     await printFeeHandlerBalances();
+    await sendPushMessage("Payments sent", "Step 5")
   }
+
+  // if (steps.includes(6)) {
+  //   await updateGlpRewards()
+  //   await printFeeHandlerBalances();
+  // }
 
   if (steps.includes(6)) {
-    await updateGlpRewards()
-    await printFeeHandlerBalances();
-  }
-
-  if (steps.includes(7)) {
     await sendReferralRewards();
     await printFeeHandlerBalances();
+    await sendPushMessage("Referral rewards sent", "Step 6: Fee distribution completed")
   }
 }
 

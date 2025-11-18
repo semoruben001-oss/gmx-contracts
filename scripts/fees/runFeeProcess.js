@@ -3,9 +3,14 @@ const { distributeFees } = require("./distributeFees")
 const { sendPushMessage } = require("../shared/helpers");
 
 async function main() {
-  await sendPushMessage("running fee process")
-  await createFeePlan()
-  await distributeFees({ write: true, steps: "1,2,3,4,5,6" })
+  try {
+    await sendPushMessage("running fee process")
+    await createFeePlan()
+    await distributeFees({ write: true, steps: "1,2,3,4,5,6" })
+  } catch (e) {
+    console.error(`error encountered: ${e}`)
+    await sendPushMessage(`error encountered: ${e.message}`)
+  }
 }
 
 main()

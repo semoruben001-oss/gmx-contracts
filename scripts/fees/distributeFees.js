@@ -32,7 +32,7 @@ const MintableToken = require("../../artifacts-v2/contracts/mock/MintableToken.s
 
 const feePlan = require("../../fee-plan.json");
 
-const write = process.env.WRITE === "true"
+let write = process.env.WRITE === "true"
 
 const skipBalanceValidations =
   process.env.SKIP_BALANCE_VALIDATIONS === "true";
@@ -454,7 +454,11 @@ async function sendPayments() {
   }
 }
 
-async function distributeFees({ steps }) {
+async function distributeFees({ write: _write, steps }) {
+  if (_write !== undefined) {
+    write = _write
+  }
+
   const stepsToRun = steps.split(",");
   console.log("stepsToRun", stepsToRun);
 

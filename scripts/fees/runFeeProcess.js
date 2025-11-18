@@ -5,7 +5,7 @@ const { sendPushMessage } = require("../shared/helpers");
 async function main() {
   await sendPushMessage("running fee process")
   await createFeePlan()
-  await distributeFees({ steps: "1,2,3,4,5,6" })
+  await distributeFees({ write: true, steps: "1,2,3,4,5,6" })
 }
 
 main()

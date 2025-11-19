@@ -129,6 +129,7 @@ module.exports = {
     avax: {
       url: AVAX_URL,
       gasPrice: 100000000000,
+      gas: 8_000_000,
       chainId: 43114,
       accounts: getEnvAccounts(AVAX_DEPLOY_KEY)
     },

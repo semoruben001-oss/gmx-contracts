@@ -164,6 +164,7 @@ function shouldRunFeeStep(steps, step) {
   }
 
   if (hasSavedFeeStep(step)) {
+    console.log(`skipping`, step)
     return false
   }
 

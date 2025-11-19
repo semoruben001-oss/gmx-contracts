@@ -499,6 +499,7 @@ async function sendPayments() {
     const network = networks[i]
 
     const stepKey = `sendPayments-${network}`
+    console.log(`running step: ${stepKey}`)
 
     if (hasSavedFeeStep(stepKey)) {
       continue

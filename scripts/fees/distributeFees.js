@@ -146,7 +146,11 @@ function saveFeeStep(step) {
   fs.writeFileSync(`./fee-steps.json`, JSON.stringify(feeSteps, null, 4))
 }
 
-function isFeeStepAlreadyCompleted(step) {
+function shouldRunFeeStep(steps, step) {
+  if (!steps.includes(step)) {
+    return false
+  }
+
   // 259200 => 3 days
   if (feeSteps[step] && Date.now() - feeSteps[step] < 259200) {
     return true
@@ -512,43 +516,44 @@ async function distributeFees({ write: _write, steps }) {
   };
 
 
-  if (steps.includes(1)) {
+  if (shouldRunFeeStep(1)) {
     await withdrawFees();
     await printFeeHandlerBalances();
+    saveFeeStep(1)
     await sendPushMessage("Fees withdrawn", "Step 1")
   }
 
-  if (steps.includes(2)) {
+  if (shouldRunFeeStep(2)) {
     await bridgeTokens()
+    saveFeeStep(2)
     await sendPushMessage("Tokens bridged", "Step 2")
   }
 
-  if (steps.includes(3)) {
+  if (shouldRunFeeStep(3)) {
     await fundAccounts();
     await printFeeHandlerBalances();
+    saveFeeStep(3)
     await sendPushMessage("Accounts funded", "Step 3")
   }
 
-  if (steps.includes(4)) {
+  if (shouldRunFeeStep(4)) {
     await updateGmxRewards();
     await printFeeHandlerBalances();
+    saveFeeStep(4)
     await sendPushMessage("GMX rewards updated", "Step 4")
   }
 
-  if (steps.includes(5)) {
+  if (shouldRunFeeStep(5)) {
     await sendPayments()
     await printFeeHandlerBalances();
+    saveFeeStep(5)
     await sendPushMessage("Payments sent", "Step 5")
   }
 
-  // if (steps.includes(6)) {
-  //   await updateGlpRewards()
-  //   await printFeeHandlerBalances();
-  // }
-
-  if (steps.includes(6)) {
+  if (shouldRunFeeStep(6)) {
     await sendReferralRewards();
     await printFeeHandlerBalances();
+    saveFeeStep(6)
     await sendPushMessage("Referral rewards sent", "Step 6: Fee distribution completed")
   }
 }

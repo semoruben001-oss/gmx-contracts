@@ -147,8 +147,14 @@ function saveFeeStep(step) {
 }
 
 function hasSavedFeeStep(step) {
+  console.log(`checking fee step: ${step}, ${feeSteps[step]}`)
+
+  if (!feeSteps[step]) {
+    return false
+  }
+
   // 259200 => 3 days
-  return feeSteps[step] && Date.now() - feeSteps[step] < 259200 * 1000
+  return Date.now() - feeSteps[step] < 259200 * 1000
 }
 
 function shouldRunFeeStep(steps, step) {

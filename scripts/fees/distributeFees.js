@@ -30,7 +30,7 @@ const Multicall3 = require("../../artifacts-v2/contracts/mock/Multicall3.sol/Mul
 const FeeHandler = require("../../artifacts-v2/contracts/fee/FeeHandler.sol/FeeHandler.json");
 const MintableToken = require("../../artifacts-v2/contracts/mock/MintableToken.sol/MintableToken.json");
 
-const feePlan = require("../../fee-plan.json");
+let feePlan
 
 let write = process.env.WRITE === "true"
 
@@ -458,6 +458,8 @@ async function distributeFees({ write: _write, steps }) {
   if (_write !== undefined) {
     write = _write
   }
+
+  feePlan = require("../../fee-plan.json");
 
   const stepsToRun = steps.split(",");
   console.log("stepsToRun", stepsToRun);

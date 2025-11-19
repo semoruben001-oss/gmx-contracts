@@ -154,10 +154,10 @@ function shouldRunFeeStep(steps, step) {
 
   // 259200 => 3 days
   if (feeSteps[step] && Date.now() - feeSteps[step] < 259200) {
-    return true
+    return false
   }
 
-  return false
+  return true
 }
 
 async function printFeeHandlerBalances() {

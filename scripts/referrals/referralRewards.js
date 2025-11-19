@@ -185,7 +185,7 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
       const accounts = currentBatch.map((item) => item[0])
       const amounts = currentBatch.map((item) => item[1])
 
-      await sendTxn(batchSender.sendAndEmit(esGmx.address, accounts, amounts, affiliateRewardsTypeId. { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, esGmx affiliate rewards)")
+      await sendTxn(batchSender.sendAndEmit(esGmx.address, accounts, amounts, affiliateRewardsTypeId, { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, esGmx affiliate rewards)")
       await sendTxn(timelock.batchIncreaseBonusRewards(vester.address, accounts, amounts, { gasLimit: 20_000_000 }), "timelock.batchSetBonusRewards(vester.address, accounts, amounts)")
     })
   }

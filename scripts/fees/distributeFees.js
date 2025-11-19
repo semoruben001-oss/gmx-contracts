@@ -511,8 +511,8 @@ async function sendPayments() {
     const chainlinkFeeReceiver = chainlinkFeeReceivers[network]
 
     if (write) {
-      await sendTxn(nativeToken.transfer(treasuries[network], rewardAmounts[network].treasury), `nativeToken.transfer ${i}: ${rewardAmounts[network].treasury.toString()}`)
-      await sendTxn(nativeToken.transfer(chainlinkFeeReceiver, rewardAmounts[network].chainlink), `nativeToken.transfer ${i}: ${rewardAmounts[network].chainlink.toString()}`)
+      await sendTxn(nativeToken.transfer(treasuries[network], rewardAmounts[network].treasury, { gasLimit: 500_000 }), `nativeToken.transfer ${i}: ${rewardAmounts[network].treasury.toString()}`)
+      await sendTxn(nativeToken.transfer(chainlinkFeeReceiver, rewardAmounts[network].chainlink, { gasLimit: 500_000 }), `nativeToken.transfer ${i}: ${rewardAmounts[network].chainlink.toString()}`)
     }
 
     saveFeeStep(stepKey)

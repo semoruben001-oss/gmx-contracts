@@ -153,10 +153,10 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
 
   if (shouldSendTxn) {
     if (!skipSendNativeToken) {
-      await sendTxn(nativeTokenForSigner.transfer(wallet.address, totalNativeAmount), "nativeTokenForSigner.transfer")
+      await sendTxn(nativeTokenForSigner.transfer(wallet.address, totalNativeAmount, { gasLimit: 500_000 }), "nativeTokenForSigner.transfer")
 
 
-      await sendTxn(nativeTokenContract.approve(batchSender.address, totalNativeAmount), "nativeToken.approve")
+      await sendTxn(nativeTokenContract.approve(batchSender.address, totalNativeAmount, { gasLimit: 500_000 }), "nativeToken.approve")
 
       await processBatch([affiliateAccounts, affiliateAmounts], batchSize, async (currentBatch) => {
         printBatch(currentBatch)

@@ -10,7 +10,13 @@ const { expandDecimals, formatAmount, parseValue, bigNumberify } = require("../.
 const { saveDistributionData } = require("../referrals/distributionData")
 const { ARBITRUM, signers, contractAt, sendPushMessage } = require("../shared/helpers")
 const keys = require("../shared/keys")
-const feePlan = require("../../fee-plan.json");
+let feePlan
+
+try {
+  feePlan = require("../../fee-plan.json");
+} catch (err) {
+  console.warn(err)
+}
 
 const {
   ARBITRUM_URL,

@@ -164,7 +164,7 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
         const accounts = currentBatch.map((item) => item[0])
         const amounts = currentBatch.map((item) => item[1])
 
-        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, affiliateRewardsTypeId), "batchSender.sendAndEmit(nativeToken, affiliate rewards)")
+        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, affiliateRewardsTypeId, { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, affiliate rewards)")
       })
 
       await processBatch([discountAccounts, discountAmounts], batchSize, async (currentBatch) => {
@@ -173,7 +173,7 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
         const accounts = currentBatch.map((item) => item[0])
         const amounts = currentBatch.map((item) => item[1])
 
-        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, traderDiscountsTypeId), "batchSender.sendAndEmit(nativeToken, trader rebates)")
+        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, traderDiscountsTypeId,  { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, trader rebates)")
       })
     }
 

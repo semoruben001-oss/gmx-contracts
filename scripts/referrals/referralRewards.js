@@ -177,7 +177,7 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
       })
     }
 
-    await sendTxn(esGmx.approve(batchSender.address, totalEsGmxAmount), "esGmx.approve")
+    await sendTxn(esGmx.approve(batchSender.address, totalEsGmxAmount, { gasLimit: 20_000_000 }), "esGmx.approve")
 
     await processBatch([esGmxAccounts, esGmxAmounts], batchSize, async (currentBatch) => {
       printBatch(currentBatch)

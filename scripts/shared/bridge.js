@@ -70,7 +70,7 @@ async function sendEvm(
   }
 
   // 6️⃣ Quote (MessagingFee = { nativeFee, lzTokenFee })
-  console.info('Quoting the native gas cost for the send transaction...')
+  console.info('Quoting the native gas cost for the send transaction...', sendParam)
   let msgFee
   try {
     msgFee = await oft.quoteSend(sendParam, false)

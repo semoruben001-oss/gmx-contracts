@@ -526,7 +526,9 @@ async function createReferralRewardsRef({ refTimestamp, gmxPrice }) {
 async function createFeePlan() {
   const { refTimestamp } = getRefTime()
   if (feePlan && (refTimestamp - feePlan.refTimestamp) < 86400) {
-    throw new Error("Fee plan for week already exists")
+    console.log("Fee plan for week already exists")
+    return
+    // throw new Error("Fee plan for week already exists")
   }
 
   const feeValues = await getFeeValues()

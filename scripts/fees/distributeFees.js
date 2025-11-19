@@ -8,6 +8,8 @@ const {
   sendPushMessage
 } = require("../shared/helpers");
 
+const { sendEvm } = require("../shared/bridge")
+
 const {
   getArbValues: getArbFundAccountValues,
   getAvaxValues: getAvaxFundAccountValues,

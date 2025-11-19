@@ -153,7 +153,7 @@ function shouldRunFeeStep(steps, step) {
   }
 
   // 259200 => 3 days
-  if (feeSteps[step] && Date.now() - feeSteps[step] < 259200) {
+  if (feeSteps[step] && Date.now() - feeSteps[step] < 259200 * 1000) {
     return false
   }
 

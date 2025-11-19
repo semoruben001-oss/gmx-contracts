@@ -12,10 +12,17 @@ const IOFTArtifact = require('../../abi/IOFT.json')
 
 const makeBytes32 = (bytes) => hexZeroPad(bytes || '0x0', 32)
 
+function roundAmount(amount) {
+  return amount.div("1000000000000").mul("1000000000000")
+}
+
 async function sendEvm(
   { rpcUrl, key, srcWrapperAddress, srcEid, dstEid, amount, to, minAmount, extraOptions, composeMsg },
   hre
 ) {
+  amount = roundAmount(amount)
+  minAmount = roundAmount(minAmount)
+
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
   const signer = new ethers.Wallet(key).connect(provider)
 

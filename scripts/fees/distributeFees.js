@@ -148,6 +148,7 @@ function saveFeeStep(step) {
 
 function shouldRunFeeStep(steps, step) {
   if (!steps.includes(step)) {
+    console.log(`${steps} does not include: ${step}`)
     return false
   }
 
@@ -155,6 +156,7 @@ function shouldRunFeeStep(steps, step) {
   if (feeSteps[step] && Date.now() - feeSteps[step] < 259200) {
     return true
   }
+
   return false
 }
 

@@ -32,6 +32,14 @@ const Multicall3 = require("../../artifacts-v2/contracts/mock/Multicall3.sol/Mul
 const FeeHandler = require("../../artifacts-v2/contracts/fee/FeeHandler.sol/FeeHandler.json");
 const MintableToken = require("../../artifacts-v2/contracts/mock/MintableToken.sol/MintableToken.json");
 
+let feeSteps = {}
+
+try {
+  feeSteps = require("../../fee-steps.json");
+} catch (err) {
+  console.warn(err)
+}
+
 let feePlan
 
 let write = process.env.WRITE === "true"
@@ -132,6 +140,19 @@ const feeHandlers = {
     feeKeepers.avax
   ),
 };
+
+function saveFeeStep(step) {
+  feeSteps[step] = Date.now()
+  fs.writeFileSync(`./fee-steps.json`, JSON.stringify(feeSteps, null, 4))
+}
+
+function isFeeStepAlreadyCompleted(step) {
+  // 259200 => 3 days
+  if (feeSteps[step] && Date.now() - feeSteps[step] < 259200) {
+    return true
+  }
+  return false
+}
 
 async function printFeeHandlerBalances() {
   for (let i = 0; i < networks.length; i++) {

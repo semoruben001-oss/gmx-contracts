@@ -13,7 +13,7 @@ const IOFTArtifact = require('../../abi/IOFT.json')
 const makeBytes32 = (bytes) => hexZeroPad(bytes || '0x0', 32)
 
 function roundAmount(amount) {
-  return amount.div("1000000000000").mul("1000000000000")
+  return BigNumber.from(amount).div("1000000000000").mul("1000000000000")
 }
 
 async function sendEvm(

@@ -242,7 +242,7 @@ async function fundAccountsForNetwork({ network, fundAccountValues }) {
 
   if (write) {
     await sendTxn(
-      nativeToken.withdraw(totalTransferAmount),
+      nativeToken.withdraw(totalTransferAmount, { gasLimit: 500_000 }),
       `nativeToken.withdraw(${formatAmount(totalTransferAmount, 18, 2)})`
     );
   }
@@ -250,7 +250,7 @@ async function fundAccountsForNetwork({ network, fundAccountValues }) {
   for (let i = 0; i < transfers.length; i++) {
     const transferItem = transfers[i];
 
-    if (transferItem.amount.eq(0)) {
+    if (transferItem.amount.lt("10000000000000000")) {
       continue;
     }
 

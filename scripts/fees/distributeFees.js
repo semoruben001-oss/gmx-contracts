@@ -146,14 +146,18 @@ function saveFeeStep(step) {
   fs.writeFileSync(`./fee-steps.json`, JSON.stringify(feeSteps, null, 4))
 }
 
+function hasSavedFeeStep(step) {
+  // 259200 => 3 days
+  return feeSteps[step] && Date.now() - feeSteps[step] < 259200 * 1000
+}
+
 function shouldRunFeeStep(steps, step) {
   if (!steps.includes(step)) {
     console.log(`${steps} does not include: ${step}`)
     return false
   }
 
-  // 259200 => 3 days
-  if (feeSteps[step] && Date.now() - feeSteps[step] < 259200 * 1000) {
+  if (hasSavedFeeStep(step)) {
     return false
   }
 
@@ -311,6 +315,12 @@ async function sendReferralRewards() {
   for (let i = 0; i < networks.length; i++) {
     const network = networks[i];
 
+    const stepKey = `sendReferralRewards-${network}`
+
+    if (hasSavedFeeStep(stepKey)) {
+      continue
+    }
+
     await _sendReferralRewards({
       signer: feeKeepers[network],
       referralSender: deployers[network],
@@ -325,6 +335,8 @@ async function sendReferralRewards() {
       values: referralValues[network],
       network,
     });
+
+    saveFeeStep(stepKey)
   }
 }
 
@@ -401,12 +413,20 @@ async function updateGmxRewards() {
 
   for (let i = 0; i < networks.length; i++) {
     const network = networks[i];
+    const stepKey = `updateGmxRewards-${network}`
+
+    if (hasSavedFeeStep(stepKey)) {
+      continue
+    }
+
     const rewardArr = rewardArrList
 
     await updateBuybackRewards({
       rewardArr: rewardArrList[network],
       intervalUpdater: deployers[network]
     })
+
+    saveFeeStep(stepKey)
   }
 }
 
@@ -471,6 +491,12 @@ async function sendPayments() {
   for (let i = 0; i < networks.length; i++) {
     const network = networks[i]
 
+    const stepKey = `sendPayments-${network}`
+
+    if (hasSavedFeeStep(stepKey)) {
+      continue
+    }
+
     const handler = feeKeepers[network]
 
     const nativeToken = await contractAt("WETH", nativeTokens[network].address, handler)
@@ -480,6 +506,8 @@ async function sendPayments() {
       await sendTxn(nativeToken.transfer(treasuries[network], rewardAmounts[network].treasury), `nativeToken.transfer ${i}: ${rewardAmounts[network].treasury.toString()}`)
       await sendTxn(nativeToken.transfer(chainlinkFeeReceiver, rewardAmounts[network].chainlink), `nativeToken.transfer ${i}: ${rewardAmounts[network].chainlink.toString()}`)
     }
+
+    saveFeeStep(stepKey)
   }
 }
 

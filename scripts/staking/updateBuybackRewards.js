@@ -17,7 +17,7 @@ async function updateBuybackRewards({ rewardArr, intervalUpdater }) {
 
     const rewardDistributor = await contractAt("RewardDistributor", rewardDistributorAddress, intervalUpdater)
     console.log("transferAmount", transferAmount)
-    const rewardsPerInterval = convertedTransferAmount.div(6 * 24 * 60 * 60)
+    const rewardsPerInterval = convertedTransferAmount.div(7 * 24 * 60 * 60)
     console.log("rewardDistributorAddress", rewardDistributorAddress)
     console.log("convertedTransferAmount", convertedTransferAmount.toString())
     console.log("rewardsPerInterval", rewardsPerInterval.toString())

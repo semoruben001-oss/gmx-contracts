@@ -164,7 +164,7 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
         const accounts = currentBatch.map((item) => item[0])
         const amounts = currentBatch.map((item) => item[1])
 
-        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, affiliateRewardsTypeId, { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, affiliate rewards)")
+        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, affiliateRewardsTypeId, { gasLimit: 15_000_000 }), "batchSender.sendAndEmit(nativeToken, affiliate rewards)")
       })
 
       await processBatch([discountAccounts, discountAmounts], batchSize, async (currentBatch) => {
@@ -173,11 +173,11 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
         const accounts = currentBatch.map((item) => item[0])
         const amounts = currentBatch.map((item) => item[1])
 
-        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, traderDiscountsTypeId,  { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, trader rebates)")
+        await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, traderDiscountsTypeId,  { gasLimit: 15_000_000 }), "batchSender.sendAndEmit(nativeToken, trader rebates)")
       })
     }
 
-    await sendTxn(esGmx.approve(batchSender.address, totalEsGmxAmount, { gasLimit: 20_000_000 }), "esGmx.approve")
+    await sendTxn(esGmx.approve(batchSender.address, totalEsGmxAmount, { gasLimit: 15_000_000 }), "esGmx.approve")
 
     await processBatch([esGmxAccounts, esGmxAmounts], batchSize, async (currentBatch) => {
       printBatch(currentBatch)
@@ -185,8 +185,8 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
       const accounts = currentBatch.map((item) => item[0])
       const amounts = currentBatch.map((item) => item[1])
 
-      await sendTxn(batchSender.sendAndEmit(esGmx.address, accounts, amounts, affiliateRewardsTypeId, { gasLimit: 20_000_000 }), "batchSender.sendAndEmit(nativeToken, esGmx affiliate rewards)")
-      await sendTxn(timelock.batchIncreaseBonusRewards(vester.address, accounts, amounts, { gasLimit: 20_000_000 }), "timelock.batchSetBonusRewards(vester.address, accounts, amounts)")
+      await sendTxn(batchSender.sendAndEmit(esGmx.address, accounts, amounts, affiliateRewardsTypeId, { gasLimit: 15_000_000 }), "batchSender.sendAndEmit(nativeToken, esGmx affiliate rewards)")
+      await sendTxn(timelock.batchIncreaseBonusRewards(vester.address, accounts, amounts, { gasLimit: 15_000_000 }), "timelock.batchSetBonusRewards(vester.address, accounts, amounts)")
     })
   }
 }

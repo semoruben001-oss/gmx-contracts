@@ -1,7 +1,7 @@
 const { getFrameSigner, contractAt, sendTxn, updateTokensPerInterval } = require("../shared/helpers")
 const { expandDecimals, bigNumberify } = require("../../test/shared/utilities")
 
-async function updateBuybackRewards({ rewardArr, intervalUpdater }) {
+async function updateBuybackRewards({ rewardArr, intervalUpdater, write }) {
   for (let i = 0; i < rewardArr.length; i++) {
     const rewardItem = rewardArr[i]
     const { rewardTracker, rewardToken, transferAmount, customReceiver } = rewardItem
@@ -23,7 +23,7 @@ async function updateBuybackRewards({ rewardArr, intervalUpdater }) {
     console.log("rewardsPerInterval", rewardsPerInterval.toString())
 
     console.log("sendTxn rewardToken.transfer")
-    if (process.env.WRITE === "true") {
+    if (write) {
       if (customReceiver) {
         console.log(`sending to customReceiver: ${customReceiver}`)
         await sendTxn(rewardToken.transfer(customReceiver, convertedTransferAmount), `rewardToken.transfer ${i}, ${convertedTransferAmount}`)
@@ -33,7 +33,7 @@ async function updateBuybackRewards({ rewardArr, intervalUpdater }) {
     }
 
     console.log("sendTxn updateTokensPerInterval")
-    if (process.env.WRITE === "true") {
+    if (write) {
       if (customReceiver) {
         console.log("setting tokens per interval to zero as customReceiver is present")
         await updateTokensPerInterval(rewardDistributor, 0, "rewardDistributor")

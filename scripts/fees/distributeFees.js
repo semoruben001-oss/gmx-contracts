@@ -430,56 +430,11 @@ async function updateGmxRewards() {
 
     await updateBuybackRewards({
       rewardArr: rewardArrList[network],
-      intervalUpdater: deployers[network]
+      intervalUpdater: deployers[network],
+      write
     })
 
     saveFeeStep(stepKey)
-  }
-}
-
-async function updateGlpRewards() {
-  const nativeTokenBalance = {
-    arbitrum: await nativeTokens.arbitrum.balanceOf(feeKeepers.arbitrum.address),
-    avax: await nativeTokens.avax.balanceOf(feeKeepers.avax.address),
-  }
-
-  if (!skipBalanceValidations && nativeTokenBalance.arbitrum.lt(feePlan.glpRewards.arbitrum)) {
-    throw new Error(`Insufficient nativeTokenBalance.arbitrum: ${nativeTokenBalance.arbitrum.toString()}, ${feePlan.glpRewards.arbitrum}`)
-  }
-
-  if (!skipBalanceValidations && nativeTokenBalance.avax.lt(feePlan.glpRewards.avax)) {
-    throw new Error(`Insufficient nativeTokenBalance.avax: ${nativeTokenBalance.avax.toString()}, ${feePlan.glpRewards.avax}`)
-  }
-
-  const rewardArrList = {
-    arbitrum: [
-      {
-        // FeeGlpTracker
-        rewardTracker: await contractAt("RewardTracker", "0x4e971a87900b931fF39d1Aad67697F49835400b6", feeKeepers.arbitrum),
-        rewardToken: nativeTokens.arbitrum,
-        transferAmount: feePlan.glpRewards.arbitrum,
-        customReceiver: "0x68863dDE14303BcED249cA8ec6AF85d4694dea6A"
-      },
-    ],
-    avax: [
-      {
-        // FeeGlpTracker
-        rewardTracker: await contractAt("RewardTracker", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F", feeKeepers.avax),
-        rewardToken: nativeTokens.avax,
-        transferAmount: feePlan.glpRewards.avax,
-        customReceiver: "0x0339740d92fb8BAf73bAB0E9eb9494bc0Df1CaFD"
-      },
-    ]
-  }
-
-  for (let i = 0; i < networks.length; i++) {
-    const network = networks[i];
-    const rewardArr = rewardArrList
-
-    await updateBuybackRewards({
-      rewardArr: rewardArrList[network],
-      intervalUpdater: deployers[network]
-    })
   }
 }
 

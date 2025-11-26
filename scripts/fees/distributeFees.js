@@ -40,6 +40,8 @@ try {
   console.warn(err)
 }
 
+console.log("feeSteps", feeSteps)
+
 let feePlan
 
 let write = process.env.WRITE === "true"

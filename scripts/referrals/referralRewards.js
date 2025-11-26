@@ -78,10 +78,12 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
     if (account === AddressZero) { continue }
 
     const amount = bigNumberify(rebateUsd).mul(expandDecimals(1, 18)).div(nativeTokenPrice)
-    affiliateAccounts.push(account)
-    affiliateAmounts.push(amount)
-    totalAffiliateAmount = totalAffiliateAmount.add(amount)
-    totalAffiliateUsd = totalAffiliateUsd.add(rebateUsd)
+    if (amount.gt(0)) {
+      affiliateAccounts.push(account)
+      affiliateAmounts.push(amount)
+      totalAffiliateAmount = totalAffiliateAmount.add(amount)
+      totalAffiliateUsd = totalAffiliateUsd.add(rebateUsd)
+    }
 
     if (esgmxRewardsUsd) {
       const esGmxAmount = bigNumberify(esgmxRewardsUsd).mul(expandDecimals(1, 18)).div(gmxPrice)
@@ -97,10 +99,12 @@ async function sendReferralRewards({ skipSendNativeToken, signer, referralSender
     if (account === AddressZero) { continue }
 
     const amount = bigNumberify(discountUsd).mul(expandDecimals(1, 18)).div(nativeTokenPrice)
-    discountAccounts.push(account)
-    discountAmounts.push(amount)
-    totalDiscountAmount = totalDiscountAmount.add(amount)
-    totalDiscountUsd = totalDiscountUsd.add(discountUsd)
+    if (amount.gt(0)) {
+      discountAccounts.push(account)
+      discountAmounts.push(amount)
+      totalDiscountAmount = totalDiscountAmount.add(amount)
+      totalDiscountUsd = totalDiscountUsd.add(discountUsd)
+    }
   }
 
   affiliatesData.sort((a, b) => {

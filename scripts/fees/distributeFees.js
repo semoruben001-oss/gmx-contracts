@@ -524,6 +524,8 @@ async function distributeFees({ write: _write, steps }) {
     write = _write
   }
 
+  // reload json file
+  delete require.cache[require.resolve("../../fee-plan.json")];
   feePlan = require("../../fee-plan.json");
 
   const stepsToRun = steps.split(",");

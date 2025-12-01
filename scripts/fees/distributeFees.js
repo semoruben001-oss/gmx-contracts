@@ -66,8 +66,8 @@ const SKIP_VALIDATIONS = process.env.SKIP_VALIDATIONS
 const FEE_KEEPER_KEY = HANDLER_KEY;
 
 const treasuries = {
-  arbitrum: "0x0a2962120b11A4a36700C5De00D4980E58a2D1C0",
-  avax: "0xe57fE47902A35Bc0d82C83e39610Af546E1D18B9",
+  arbitrum: "0x68863dDE14303BcED249cA8ec6AF85d4694dea6A",
+  avax: "0x0339740d92fb8BAf73bAB0E9eb9494bc0Df1CaFD",
 };
 
 const chainlinkFeeReceivers = {

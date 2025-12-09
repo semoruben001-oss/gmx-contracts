@@ -113,7 +113,8 @@ async function main() {
     "0x82429089e7c86B7047b793A9E7E7311C93d2b7a6", // coinflipcanada
     "0xD7941C4Ca57a511F21853Bbc7FBF8149d5eCb398", // G
     "0xfb481D70f8d987c1AE3ADc90B7046e39eb6Ad64B", // kr
-    "0x6091646D0354b03DD1e9697D33A7341d8C93a6F5" // xhiroz
+    "0x6091646D0354b03DD1e9697D33A7341d8C93a6F5", // xhiroz
+    "0xD2A54e7AFC36f6D09627c7c9ABdd033Ac3800613", // Tano
   ]
 
   for (let i = 0; i < handlers.length; i++) {

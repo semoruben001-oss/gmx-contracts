@@ -143,10 +143,6 @@ async function getArbFeeValues() {
   const totalGmxBalance = withdrawableGmx.add(feeKeeperGmxBalance)
   const totalNativeTokenBalance = withdrawableNativeToken.add(feeKeeperNativeTokenBalance)
 
-  const feesV1 = await processPeriodV1('prev', 'arbitrum')
-  const feesV2 = await processPeriodV2('prev', 'arbitrum')
-  console.log("feesV2", feesV2)
-
   const stakedGmx = await contractAt("Token", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F", signer)
   const stakedGmxSupply = await stakedGmx.totalSupply()
 
@@ -156,8 +152,6 @@ async function getArbFeeValues() {
     nativeTokenPrice,
     totalGmxBalance,
     totalNativeTokenBalance,
-    feesV1,
-    feesV2,
     stakedGmxSupply,
     keeperCosts
   }
@@ -192,9 +186,6 @@ async function getAvaxFeeValues() {
   const totalGmxBalance = withdrawableGmx.add(feeKeeperGmxBalance)
   const totalNativeTokenBalance = withdrawableNativeToken.add(feeKeeperNativeTokenBalance)
 
-  const feesV1 = await processPeriodV1('prev', 'avalanche')
-  const feesV2 = await processPeriodV2('prev', 'avalanche')
-
   const stakedGmx = await contractAt("Token", "0x4d268a7d4C16ceB5a606c173Bd974984343fea13", signer)
   const stakedGmxSupply = await stakedGmx.totalSupply()
 
@@ -205,8 +196,6 @@ async function getAvaxFeeValues() {
     nativeTokenPrice,
     totalGmxBalance,
     totalNativeTokenBalance,
-    feesV1,
-    feesV2,
     stakedGmxSupply,
     keeperCosts
   }
@@ -218,14 +207,10 @@ async function getFeeValues() {
       avax: await getAvaxFeeValues()
   }
 
-  const [start, end] = getPeriod('prev')
-
   const gmxPrice = await getGmxPrice(values.arbitrum.nativeTokenPrice)
 
   return {
     ...values,
-    start,
-    end,
     gmxPrice
   }
 }
@@ -256,14 +241,7 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   const totalWethAvailable = values.arbitrum.totalNativeTokenBalance
   const wethPrice = values.arbitrum.nativeTokenPrice
 
-  const v1FeesUsdArb = values.arbitrum.feesV1
-  const v2FeesUsdArb = values.arbitrum.feesV2.mul(10).div(100)
-  console.log("v1FeesUsdArb", v1FeesUsdArb.toString())
-  console.log("v2FeesUsdArb", v2FeesUsdArb.toString())
-
-  const totalFeesUsdArb = v1FeesUsdArb.add(v2FeesUsdArb)
-
-  const treasuryChainlinkWethAmount = totalWethAvailable.mul(v2FeesUsdArb).div(totalFeesUsdArb)
+  const treasuryChainlinkWethAmount = totalWethAvailable
 
   let treasuryWethAmount = treasuryChainlinkWethAmount.mul(88).div(100).mul(ARB_MULTIPLIER).div(10000)
   const chainlinkWethAmount = treasuryChainlinkWethAmount.mul(12).div(100)
@@ -314,12 +292,7 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   const wavaxPrice = values.avax.nativeTokenPrice
   const totalWavaxUsdValue = totalWavaxAvailable.mul(wavaxPrice)
 
-  const v1FeesUsdAvax = values.avax.feesV1
-  const v2FeesUsdAvax = values.avax.feesV2.mul(10).div(100)
-
-  const totalFeesUsdAvax = v1FeesUsdAvax.add(v2FeesUsdAvax)
-
-  const treasuryChainlinkWavaxAmount = totalWavaxAvailable.mul(v2FeesUsdAvax).div(totalFeesUsdAvax)
+  const treasuryChainlinkWavaxAmount = totalWavaxAvailable
 
   // const maxTreasuryChainlinkWavaxAmount = v2FeesUsdAvax.mul(expandDecimals(1, 18)).div(wavaxPrice)
   //

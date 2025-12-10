@@ -3,8 +3,8 @@ const fs = require('fs')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const ethers = require('ethers')
 
-const ARBITRUM_SUBGRAPH_ENDPOINT = 'https://subgraph.satsuma-prod.com/3b2ced13c8d9/gmx/gmx-arbitrum-referrals/api'
-const AVALANCHE_SUBGRAPH_ENDPOINT = 'https://subgraph.satsuma-prod.com/3b2ced13c8d9/gmx/gmx-avalanche-referrals/api'
+const ARBITRUM_SUBGRAPH_ENDPOINT = 'https://api.goldsky.com/api/public/project_cmgptuc4qhclc01rh9s4q554a/subgraphs/gmx-arbitrum-referrals/master-240506225935-51167d5/gn'
+const AVALANCHE_SUBGRAPH_ENDPOINT = 'https://api.goldsky.com/api/public/project_cmgptuc4qhclc01rh9s4q554a/subgraphs/gmx-avalanche-referrals/master-240415215829-f6877d6/gn'
 
 const ES_GMX_TOKEN_ADDRESS = {
   arbitrum: '0xf42ae1d54fd613c9bb14810b0588faaa09a426ca',

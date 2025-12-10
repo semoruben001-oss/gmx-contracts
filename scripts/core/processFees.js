@@ -33,6 +33,7 @@ const { DEPLOYER_KEY_FILE } = process.env;
 
 const getFeeKeeperKey = () => {
   const filepath = "./keys/fee-keeper.json";
+  console.log("parsing data at", filepath)
   const data = JSON.parse(fs.readFileSync(filepath));
   if (!data || !data.mnemonic) {
     throw new Error("Invalid key file");

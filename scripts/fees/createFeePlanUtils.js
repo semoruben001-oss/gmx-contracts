@@ -92,7 +92,7 @@ async function getInfoTokens(vault, reader, nativeToken, tokenArr) {
   const vaultPropsLength = 10
 
   for (let i = 0; i < tokenArr.length; i++) {
-    console.log("parsing", tokenArr[i])
+    // console.log("parsing", tokenArr[i])
     const token = JSON.parse(JSON.stringify(tokenArr[i]))
 
     // console.log("vaultTokenInfo", i * vaultPropsLength)
@@ -110,7 +110,6 @@ async function getInfoTokens(vault, reader, nativeToken, tokenArr) {
 
     infoTokens[token.address] = token
   }
-  throw new Error("done")
 
   return infoTokens
 }

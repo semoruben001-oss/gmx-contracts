@@ -41,6 +41,7 @@ function getSubgraphEndpoint(network) {
 
 async function requestSubgraph(network, query) {
   const subgraphEndpoint = getSubgraphEndpoint(network)
+  console.log("querying", subgraphEndpoint)
 
   if (!subgraphEndpoint) {
     throw new Error("Unknown network " + network)

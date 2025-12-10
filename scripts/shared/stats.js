@@ -39,6 +39,7 @@ const fetch = async (...args) => {
 };
 
 const fetchGql = async (slug, gql) => {
+  console.log("fetchGql", slug)
   return fetch(
     `https://subgraph.satsuma-prod.com/3b2ced13c8d9/gmx/${slug}/api`,
     {

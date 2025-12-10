@@ -95,7 +95,7 @@ async function saveDistributionData(network, fromTimestamp, toTimestamp, account
     referralCondition = `,referral: "${account.toLowerCase()}"`
   }
 
-  const getAffiliateStatsQuery = (skip) => `affiliateStats(first: 10000, skip: ${skip}, where: {
+  const getAffiliateStatsQuery = (skip) => `affiliateStats(first: 1000, skip: ${skip}, where: {
       period: daily,
       timestamp_gte: ${fromTimestamp},
       timestamp_lt: ${toTimestamp},
@@ -116,7 +116,7 @@ async function saveDistributionData(network, fromTimestamp, toTimestamp, account
       }
     }`
 
-  const getReferralStatsQuery = (skip) => `referralStats(first: 10000, skip: ${skip}, where: {
+  const getReferralStatsQuery = (skip) => `referralStats(first: 1000, skip: ${skip}, where: {
       period: daily,
       timestamp_gte: ${fromTimestamp},
       timestamp_lt: ${toTimestamp},
@@ -418,7 +418,7 @@ async function getEsGMXReferralRewardsData({
         }
         orderBy: timestamp
         orderDirection: desc
-        first: 10000
+        first: 1000
         skip: ${skip}
       ) {
         tokens

@@ -53,6 +53,7 @@ async function requestSubgraph(network, query) {
     body: payload,
     headers: {'Content-Type': 'application/json'}
   })
+  console.log("res", res)
 
   const j = await res.json()
   if (j.errors) {

@@ -93,22 +93,22 @@ async function getInfoTokens(vault, reader, nativeToken, tokenArr) {
 
   for (let i = 0; i < tokenArr.length; i++) {
     console.log("parsing", tokenArr[i])
-    // const token = JSON.parse(JSON.stringify(tokenArr[i]))
-    //
-    // // console.log("vaultTokenInfo", i * vaultPropsLength)
-    // token.poolAmount = vaultTokenInfo[i * vaultPropsLength]
-    // token.reservedAmount = vaultTokenInfo[i * vaultPropsLength + 1]
-    // token.usdgAmount = vaultTokenInfo[i * vaultPropsLength + 2]
-    // token.redemptionAmount = vaultTokenInfo[i * vaultPropsLength + 3]
-    // token.weight = vaultTokenInfo[i * vaultPropsLength + 4]
-    // token.minPrice = vaultTokenInfo[i * vaultPropsLength + 5]
-    // token.maxPrice = vaultTokenInfo[i * vaultPropsLength + 6]
-    // token.guaranteedUsd = vaultTokenInfo[i * vaultPropsLength + 7]
-    // token.maxPrimaryPrice = vaultTokenInfo[i * vaultPropsLength + 8]
-    // token.minPrimaryPrice = vaultTokenInfo[i * vaultPropsLength + 9]
-    // // console.log("token", token)
-    //
-    // infoTokens[token.address] = token
+    const token = JSON.parse(JSON.stringify(tokenArr[i]))
+
+    // console.log("vaultTokenInfo", i * vaultPropsLength)
+    token.poolAmount = vaultTokenInfo[i * vaultPropsLength]
+    token.reservedAmount = vaultTokenInfo[i * vaultPropsLength + 1]
+    token.usdgAmount = vaultTokenInfo[i * vaultPropsLength + 2]
+    token.redemptionAmount = vaultTokenInfo[i * vaultPropsLength + 3]
+    token.weight = vaultTokenInfo[i * vaultPropsLength + 4]
+    token.minPrice = vaultTokenInfo[i * vaultPropsLength + 5]
+    token.maxPrice = vaultTokenInfo[i * vaultPropsLength + 6]
+    token.guaranteedUsd = vaultTokenInfo[i * vaultPropsLength + 7]
+    token.maxPrimaryPrice = vaultTokenInfo[i * vaultPropsLength + 8]
+    token.minPrimaryPrice = vaultTokenInfo[i * vaultPropsLength + 9]
+    // console.log("token", token)
+
+    infoTokens[token.address] = token
   }
   throw new Error("done")
 

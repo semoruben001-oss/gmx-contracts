@@ -8,7 +8,6 @@ import "../libraries/token/IERC20.sol";
 import "../core/interfaces/IGlpManager.sol";
 
 import "./interfaces/IRewardTracker.sol";
-import "./interfaces/IRewardTracker.sol";
 
 import "../access/Governable.sol";
 

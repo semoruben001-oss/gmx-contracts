@@ -18,7 +18,7 @@ async function getValues() {
 
 async function main() {
   const { glp, stakedGlpTracker, feeGlpTracker } = await getValues()
-  const sender = { address: "0x2066a650af4b6895f72e618587aad5e8120b7790" }
+  const sender = { address: "0x49ee14e37cb47bff8c512b3a0d672302a3446eb1" }
 
   await deployContract("StakedGlpMigrator", [
       sender.address,

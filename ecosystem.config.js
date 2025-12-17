@@ -7,6 +7,7 @@ module.exports = {
       timezone: "UTC",
       autorestart: false,
       watch: false,
+      interpreter: "/root/.nvm/versions/node/v22.21.1/bin/node"
     }
   ]
 };

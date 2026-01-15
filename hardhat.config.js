@@ -22,7 +22,10 @@ const {
   POLYGON_DEPLOY_KEY,
   POLYGON_URL,
   MAINNET_URL,
-  MAINNET_DEPLOY_KEY
+  MEGA_ETH_URL,
+  MAINNET_DEPLOY_KEY,
+  MEGA_ETH_DEPLOY_KEY,
+  MEGA_ETH_API_KEY
 } = require("./env.json")
 
 const getNetworkFromCLI = () => {
@@ -43,6 +46,7 @@ const getEtherscanApiKey = () => {
     avalanche: SNOWTRACE_API_KEY,
     bsc: BSCSCAN_API_KEY,
     polygon: POLYGONSCAN_API_KEY,
+    megaEth: MEGA_ETH_API_KEY
   };
 };
 
@@ -143,10 +147,26 @@ module.exports = {
       url: MAINNET_URL,
       gasPrice: 50000000000,
       accounts: getEnvAccounts(MAINNET_DEPLOY_KEY)
+    },
+    megaEth: {
+      url: MEGA_ETH_URL,
+      gasPrice: 2000000,
+      chainId: 4326,
+      accounts: getEnvAccounts(MEGA_ETH_DEPLOY_KEY)
     }
   },
   etherscan: {
     apiKey: getEtherscanApiKey(),
+    customChains: [
+      {
+        network: "megaEth",
+        chainId: 4326,
+        urls: {
+          apiURL: "https://megaeth.blockscout.com/api",
+          browserURL: "https://megaeth.blockscout.com/"
+        }
+      }
+    ]
   },
   sourcify: {
     enabled: true,

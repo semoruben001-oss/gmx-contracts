@@ -458,6 +458,8 @@ async function sendPayments() {
     const stepKey = `sendPayments-${network}`
     console.log(`running step: ${stepKey}`)
 
+    const handler = feeKeepers[network]
+
     const nativeToken = await contractAt(
       "WETH",
       nativeTokens[network].address,
@@ -472,8 +474,6 @@ async function sendPayments() {
     if (hasSavedFeeStep(stepKey)) {
       continue
     }
-
-    const handler = feeKeepers[network]
 
     const chainlinkFeeReceiver = chainlinkFeeReceivers[network]
 

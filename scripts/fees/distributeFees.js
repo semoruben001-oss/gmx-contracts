@@ -458,6 +458,12 @@ async function sendPayments() {
     const stepKey = `sendPayments-${network}`
     console.log(`running step: ${stepKey}`)
 
+    const nativeToken = await contractAt(
+      "WETH",
+      nativeTokens[network].address,
+      handler
+    );
+
     const nativeTokenBalance = await nativeToken.balanceOf(handler.address);
     if (nativeTokenBalance.lt(rewardAmounts[network].treasury.add(rewardAmounts[network].chainlink))) {
       throw new Error(`Insufficient native token balance: ${nativeTokenBalance.toString()}, ${rewardAmounts[network].treasury.toString()}, ${rewardAmounts[network].chainlink.toString()}`)

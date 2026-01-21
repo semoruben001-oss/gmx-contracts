@@ -11,13 +11,15 @@ const {
   AVAX_DEPLOY_KEY,
 } = require("../../env.json")
 
-async function getTransferItems(keepers, provider) {
+async function getTransferItems(keepers, provider, network) {
   const transferItems = []
 
   for (let i = 0; i < keepers.length; i++) {
     const keeper = keepers[i]
     const balance = await provider.getBalance(keeper.address)
     const targetAmount = ethers.utils.parseEther(keeper.targetFunds)
+
+    console.log("getTransferItems", network, keeper, balance, targetAmount)
 
     if (balance.lt(targetAmount)) {
       const amountToSend = targetAmount.sub(balance)
@@ -169,7 +171,7 @@ async function getArbValues() {
     },
   ]
 
-  const transfers = await getTransferItems(keepers, provider)
+  const transfers = await getTransferItems(keepers, provider, "arbitrum")
   const totalTransferAmount = await getTotalTransferAmount(transfers)
 
   return { sender, transfers, totalTransferAmount, tokens, gasToken: "ETH" }
@@ -302,7 +304,7 @@ async function getAvaxValues() {
     },
   ]
 
-  const transfers = await getTransferItems(keepers, provider)
+  const transfers = await getTransferItems(keepers, provider, "avax")
   const totalTransferAmount = await getTotalTransferAmount(transfers)
 
   return { sender, transfers, totalTransferAmount, tokens, gasToken: "AVAX" }

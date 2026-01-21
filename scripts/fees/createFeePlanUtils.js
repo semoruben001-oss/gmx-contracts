@@ -147,6 +147,7 @@ async function getArbFeeValues() {
   const stakedGmxSupply = await stakedGmx.totalSupply()
 
   const { totalTransferAmount: keeperCosts } = await getArbKeeperValues()
+  console.log("createFeePlan arb keeperCosts", keeperCosts.toString())
 
   return {
     nativeTokenPrice,
@@ -190,7 +191,7 @@ async function getAvaxFeeValues() {
   const stakedGmxSupply = await stakedGmx.totalSupply()
 
   const { totalTransferAmount: keeperCosts } = await getAvaxKeeperValues()
-  console.log("avax keeperCosts", keeperCosts.toString())
+  console.log("createFeePlan avax keeperCosts", keeperCosts.toString())
 
   return {
     nativeTokenPrice,

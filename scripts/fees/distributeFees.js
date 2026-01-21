@@ -475,7 +475,6 @@ async function sendPayments() {
 
     const handler = feeKeepers[network]
 
-    const nativeToken = await contractAt("WETH", nativeTokens[network].address, handler)
     const chainlinkFeeReceiver = chainlinkFeeReceivers[network]
 
     if (write) {

@@ -56,6 +56,32 @@ async function getAvaxValues() {
   }
 }
 
+async function getAvaxValues() {
+  const vault = await contractAt("Vault", "0x0000000000000000000000000000000000000000")
+  const tokenManager = { address: "0x8D1d2e24eC641eDC6a1ebe0F3aE7af0EBC573e0D" }
+  const glpManager = { address: "0x0000000000000000000000000000000000000000" }
+  const prevGlpManager = { address: "0x0000000000000000000000000000000000000000" }
+  const rewardRouter = { address: "0x0000000000000000000000000000000000000000" }
+
+  const positionRouter = { address: "0x0000000000000000000000000000000000000000" }
+  const positionManager = { address: "0x0000000000000000000000000000000000000000" }
+  const gmx = { address: "0x0000000000000000000000000000000000000000" }
+
+  const feeHandler = { address: "0x0000000000000000000000000000000000000000" }
+
+  return {
+    vault,
+    tokenManager,
+    glpManager,
+    prevGlpManager,
+    rewardRouter,
+    positionRouter,
+    positionManager,
+    gmx,
+    feeHandler
+  }
+}
+
 async function getValues() {
   if (network === "arbitrum") {
     return getArbValues()
@@ -63,6 +89,10 @@ async function getValues() {
 
   if (network === "avax") {
     return getAvaxValues()
+  }
+
+  if (network === "megaEth") {
+    return getMegaEthValues()
   }
 }
 
@@ -124,8 +154,6 @@ async function main() {
 
   const keepers = [
     "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8", // X
-    "0x75f6250b9CeED446b2F25385832dF08DB45a90b0", // shorts tracker keeper arb
-    "0x02270a816fcca45ce078c8b3de0346eebc90b227" // shorts tracker keeper avax
   ]
 
   for (let i = 0; i < keepers.length; i++) {

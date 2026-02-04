@@ -56,7 +56,7 @@ async function getAvaxValues() {
   }
 }
 
-async function getAvaxValues() {
+async function getMegaEthValues() {
   const vault = await contractAt("Vault", "0x0000000000000000000000000000000000000000")
   const tokenManager = { address: "0x8D1d2e24eC641eDC6a1ebe0F3aE7af0EBC573e0D" }
   const glpManager = { address: "0x0000000000000000000000000000000000000000" }

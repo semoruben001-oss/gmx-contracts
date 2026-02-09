@@ -19,11 +19,11 @@ async function getTransferItems(keepers, provider, network) {
     const balance = await provider.getBalance(keeper.address)
     const targetAmount = ethers.utils.parseEther(keeper.targetFunds)
 
-    console.log("getTransferItems", network, keeper, balance, targetAmount)
+    console.log("getTransferItems", network, keeper.address, keeper.targetFunds, balance.toString(), targetAmount.toString())
 
     if (balance.lt(targetAmount)) {
       const amountToSend = targetAmount.sub(balance)
-      console.log("transferItem", keeper.address, amountToSend.toString())
+      console.log("  * transferItem", keeper.address, amountToSend.toString())
       transferItems.push({ address: keeper.address, amount: amountToSend })
     }
   }

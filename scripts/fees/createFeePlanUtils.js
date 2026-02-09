@@ -4,10 +4,8 @@ const { Token: UniToken } = require("@uniswap/sdk-core")
 const { Pool } = require("@uniswap/v3-sdk")
 
 const { processPeriodV1, processPeriodV2, getPeriod } = require('../shared/stats');
-const { getArbValues: getArbReferralRewardValues, getAvaxValues: getAvaxReferralRewardValues, getReferralRewardsInfo } = require("../referrals/getReferralRewards")
 const { getArbValues: getArbKeeperValues, getAvaxValues: getAvaxKeeperValues } = require("../shared/fundAccountsUtils")
 const { expandDecimals, formatAmount, parseValue, bigNumberify } = require("../../test/shared/utilities")
-const { saveDistributionData } = require("../referrals/distributionData")
 const { ARBITRUM, signers, contractAt, sendPushMessage } = require("../shared/helpers")
 const keys = require("../shared/keys")
 let feePlan
@@ -236,7 +234,7 @@ function getRefTime() {
   return { refTimestamp, refDate }
 }
 
-async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
+async function saveFeePlan({ feeValues, refTimestamp }) {
   const values = feeValues
 
   const totalWethAvailable = values.arbitrum.totalNativeTokenBalance
@@ -257,13 +255,6 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   const keeperCostsWeth = values.arbitrum.keeperCosts
   console.log("keeperCostsWeth", keeperCostsWeth.toString())
   remainingWeth = remainingWeth.sub(keeperCostsWeth)
-
-  const referralRewardsUsdArb = referralValues.arbitrum.allAffiliateUsd.add(referralValues.arbitrum.allDiscountUsd)
-  const referralRewardsWeth = referralRewardsUsdArb.mul(expandDecimals(1, 18)).div(wethPrice)
-  console.log("referralRewardsUsdArb", referralRewardsUsdArb.toString())
-  console.log("wethPrice", wethPrice.toString())
-  console.log("referralRewardsWeth", referralRewardsWeth.toString())
-  remainingWeth = remainingWeth.sub(referralRewardsWeth)
 
   console.log("totalWethAvailable", totalWethAvailable.toString(), treasuryChainlinkWethAmount.toString())
   const expectedGlpWethAmount = totalWethAvailable.sub(treasuryChainlinkWethAmount)
@@ -312,10 +303,6 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   const keeperCostsWavax = values.avax.keeperCosts
   console.log("keeperCostsWavax", keeperCostsWavax.toString())
   remainingWavax = remainingWavax.sub(keeperCostsWavax)
-
-  const referralRewardsUsdAvax = referralValues.avax.allAffiliateUsd.add(referralValues.avax.allDiscountUsd)
-  const referralRewardsWavax = referralRewardsUsdAvax.mul(expandDecimals(1, 18)).div(wavaxPrice)
-  remainingWavax = remainingWavax.sub(referralRewardsWavax)
 
   if (remainingWavax.lt(0)) {
     if (treasuryWavaxAmount.gt(remainingWavax.abs())) {
@@ -398,10 +385,6 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
       arbitrum: keeperCostsWeth.toString(),
       avax: keeperCostsWavax.toString()
     },
-    referralRewards: {
-      arbitrum: referralRewardsWeth.toString(),
-      avax: referralRewardsWavax.toString()
-    },
     glpRewards: {
       arbitrum: remainingWeth.toString(),
       avax: remainingWavax.toString()
@@ -426,13 +409,11 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
     arbitrum: bigNumberify(data.treasuryFees.arbitrum)
       .add(data.chainlinkFees.arbitrum)
       .add(data.keeperCosts.arbitrum)
-      .add(data.referralRewards.arbitrum)
       .add(data.glpRewards.arbitrum),
 
     avax: bigNumberify(data.treasuryFees.avax)
       .add(data.chainlinkFees.avax)
       .add(data.keeperCosts.avax)
-      .add(data.referralRewards.avax)
       .add(data.glpRewards.avax),
   }
 
@@ -469,35 +450,6 @@ async function saveFeePlan({ feeValues, referralValues, refTimestamp }) {
   fs.writeFileSync(filename, JSON.stringify(data, null, 4))
 }
 
-async function createReferralRewardsRef({ refTimestamp, gmxPrice }) {
-  console.log("gmxPrice", gmxPrice.toString())
-  const toTimestampMs = refTimestamp
-  const fromTimestampMs = toTimestampMs - MILLISECONDS_PER_WEEK
-  const toTimestamp = toTimestampMs / 1000
-  const fromTimestamp = fromTimestampMs / 1000
-
-  const account = undefined
-  const esGmxRewards = "5000"
-
-  await saveDistributionData(
-    "arbitrum",
-    fromTimestamp,
-    toTimestamp,
-    account,
-    gmxPrice,
-    esGmxRewards
-  )
-
-  await saveDistributionData(
-    "avalanche",
-    fromTimestamp,
-    toTimestamp,
-    account,
-    gmxPrice,
-    esGmxRewards
-  )
-}
-
 async function createFeePlan() {
   const { refTimestamp } = getRefTime()
   if (feePlan && (refTimestamp - feePlan.refTimestamp) < 86400) {
@@ -510,17 +462,7 @@ async function createFeePlan() {
   console.log("feeValues", feeValues)
   console.log("feeValues.gmxPrice", feeValues.gmxPrice.toString())
 
-  await createReferralRewardsRef({
-    refTimestamp,
-    gmxPrice: Math.ceil(formatAmount(feeValues.gmxPrice, 30, 2)).toString()
-  })
-
-  const referralValues = {
-    arbitrum: getReferralRewardsInfo((await getArbReferralRewardValues()).data),
-    avax: getReferralRewardsInfo((await getAvaxReferralRewardValues()).data)
-  }
-
-  await saveFeePlan({ feeValues, referralValues, refTimestamp })
+  await saveFeePlan({ feeValues, refTimestamp })
   await sendPushMessage("Fee Plan Created", "Step 0")
 }
 

@@ -19,12 +19,6 @@ const {
   updateBuybackRewards,
 } = require("../staking/updateBuybackRewards");
 
-const {
-  getArbValues: getArbReferralValues,
-  getAvaxValues: getAvaxReferralValues,
-  sendReferralRewards: _sendReferralRewards,
-} = require("../referrals/referralRewards");
-
 const { formatAmount, bigNumberify } = require("../../test/shared/utilities");
 
 const DataStore = require("../../artifacts-v2/contracts/data/DataStore.sol/DataStore.json");
@@ -291,64 +285,6 @@ async function fundAccounts() {
   await fundAccountsForNetwork({ network: AVAX, fundAccountValues });
 }
 
-async function sendReferralRewards() {
-  const referralValues = {
-    arbitrum: await getArbReferralValues(deployers.arbitrum),
-    avax: await getAvaxReferralValues(deployers.avax),
-  };
-
-  const nativeTokenNames = {
-    arbitrum: "WETH",
-    avax: "WAVAX"
-  }
-
-  for (let i = 0; i < networks.length; i++) {
-    const network = networks[i];
-
-    await _sendReferralRewards({
-      signer: feeKeepers[network],
-      referralSender: deployers[network],
-      shouldSendTxn: false,
-      skipSendNativeToken: false,
-      nativeToken: {
-        address: nativeTokens[network].address,
-        name: nativeTokenNames[network]
-      },
-      nativeTokenPrice: feePlan.nativeTokenPrice[network],
-      gmxPrice: feePlan.gmxPrice,
-      values: referralValues[network],
-      network,
-    });
-  }
-
-  for (let i = 0; i < networks.length; i++) {
-    const network = networks[i];
-
-    const stepKey = `sendReferralRewards-${network}`
-
-    if (hasSavedFeeStep(stepKey)) {
-      continue
-    }
-
-    await _sendReferralRewards({
-      signer: feeKeepers[network],
-      referralSender: deployers[network],
-      shouldSendTxn: write,
-      skipSendNativeToken: false,
-      nativeToken: {
-        address: nativeTokens[network].address,
-        name: nativeTokenNames[network]
-      },
-      nativeTokenPrice: feePlan.nativeTokenPrice[network],
-      gmxPrice: feePlan.gmxPrice,
-      values: referralValues[network],
-      network,
-    });
-
-    saveFeeStep(stepKey)
-  }
-}
-
 async function updateGmxRewards() {
   const gmxTokenBalance = {
     arbitrum: await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address),
@@ -555,13 +491,6 @@ async function distributeFees({ write: _write, steps }) {
     await printFeeHandlerBalances();
     saveFeeStep(5)
     await sendPushMessage("Step 5", "Payments sent")
-  }
-
-  if (shouldRunFeeStep(steps, 6)) {
-    await sendReferralRewards();
-    await printFeeHandlerBalances();
-    saveFeeStep(6)
-    await sendPushMessage("Step 6", "Referral rewards sent")
   }
 
     await sendPushMessage("Fee Distribution Update", "Fee distribution completed")

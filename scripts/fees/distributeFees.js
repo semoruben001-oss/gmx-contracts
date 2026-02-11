@@ -3,7 +3,6 @@ const fs = require("fs");
 const {
   contractAt,
   sendTxn,
-  getFrameSigner,
   sleep,
   sendPushMessage
 } = require("../shared/helpers");
@@ -46,8 +45,6 @@ const skipBalanceValidations =
 const {
   ARBITRUM_URL,
   AVAX_URL,
-  ARBITRUM_DEPLOY_KEY,
-  AVAX_DEPLOY_KEY,
   HANDLER_KEY,
 } = require("../../env.json");
 
@@ -77,11 +74,6 @@ const providers = {
 const feeKeepers = {
   arbitrum: new ethers.Wallet(FEE_KEEPER_KEY).connect(providers.arbitrum),
   avax: new ethers.Wallet(FEE_KEEPER_KEY).connect(providers.avax),
-};
-
-const deployers = {
-  arbitrum: new ethers.Wallet(ARBITRUM_DEPLOY_KEY).connect(providers.arbitrum),
-  avax: new ethers.Wallet(AVAX_DEPLOY_KEY).connect(providers.avax),
 };
 
 const nativeTokens = {
@@ -368,7 +360,7 @@ async function updateGmxRewards() {
 
     await updateBuybackRewards({
       rewardArr: rewardArrList[network],
-      intervalUpdater: deployers[network],
+      intervalUpdater: feeKeepers[network],
       write
     })
 

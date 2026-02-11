@@ -15,17 +15,17 @@ async function main() {
   const archiClaimer2 = await contractAt("StakedGlpMigrator", "0xbFBC997ec0C3bA8bDFd6cd2F38275554eE7c307C")
 
   const multicallWriteParams = [
-    timelock.interface.encodeFunctionData("signalSetHandler", [stakedGlpTracker.address, muchoMigrator.address, true]),
-    timelock.interface.encodeFunctionData("signalSetHandler", [feeGlpTracker.address, muchoMigrator.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [stakedGlpTracker.address, muchoMigrator.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [feeGlpTracker.address, muchoMigrator.address, true]),
 
-    timelock.interface.encodeFunctionData("signalSetHandler", [stakedGlpTracker.address, archiMigrator1.address, true]),
-    timelock.interface.encodeFunctionData("signalSetHandler", [feeGlpTracker.address, archiMigrator1.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [stakedGlpTracker.address, archiMigrator1.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [feeGlpTracker.address, archiMigrator1.address, true]),
 
-    timelock.interface.encodeFunctionData("signalSetHandler", [stakedGlpTracker.address, archiMigrator2.address, true]),
-    timelock.interface.encodeFunctionData("signalSetHandler", [feeGlpTracker.address, archiMigrator2.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [stakedGlpTracker.address, archiMigrator2.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [feeGlpTracker.address, archiMigrator2.address, true]),
 
-    timelock.interface.encodeFunctionData("signalSetHandler", [feeGlpTracker.address, archiClaimer1.address, true]),
-    timelock.interface.encodeFunctionData("signalSetHandler", [feeGlpTracker.address, archiClaimer2.address, true])
+    timelock.interface.encodeFunctionData("setHandler", [feeGlpTracker.address, archiClaimer1.address, true]),
+    timelock.interface.encodeFunctionData("setHandler", [feeGlpTracker.address, archiClaimer2.address, true])
   ]
 
   await signExternally(await timelock.populateTransaction.multicall(multicallWriteParams));

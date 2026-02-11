@@ -230,7 +230,7 @@ async function withdrawFees() {
 
 async function fundAccountsForNetwork({ network, fundAccountValues }) {
   const handler = feeKeepers[network];
-  const { sender, transfers, totalTransferAmount, gasToken } =
+  const { transfers, totalTransferAmount, gasToken } =
     fundAccountValues[network];
 
   const nativeToken = await contractAt(

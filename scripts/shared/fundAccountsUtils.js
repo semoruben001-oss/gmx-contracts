@@ -6,9 +6,7 @@ const tokens = require('../core/tokens')[network];
 
 const {
   ARBITRUM_URL,
-  ARBITRUM_DEPLOY_KEY,
   AVAX_URL,
-  AVAX_DEPLOY_KEY,
 } = require("../../env.json")
 
 async function getTransferItems(keepers, provider, network) {
@@ -42,7 +40,6 @@ async function getTotalTransferAmount(transferItems) {
 
 async function getArbValues() {
   const provider = new ethers.providers.JsonRpcProvider(ARBITRUM_URL)
-  const sender = new ethers.Wallet(ARBITRUM_DEPLOY_KEY).connect(provider)
 
   const keepers = [
     {
@@ -158,12 +155,11 @@ async function getArbValues() {
   const transfers = await getTransferItems(keepers, provider, "arbitrum")
   const totalTransferAmount = await getTotalTransferAmount(transfers)
 
-  return { sender, transfers, totalTransferAmount, tokens, gasToken: "ETH" }
+  return { transfers, totalTransferAmount, tokens, gasToken: "ETH" }
 }
 
 async function getAvaxValues() {
   const provider = new ethers.providers.JsonRpcProvider(AVAX_URL)
-  const sender = new ethers.Wallet(AVAX_DEPLOY_KEY).connect(provider)
 
   const keepers = [
     {
@@ -275,7 +271,7 @@ async function getAvaxValues() {
   const transfers = await getTransferItems(keepers, provider, "avax")
   const totalTransferAmount = await getTotalTransferAmount(transfers)
 
-  return { sender, transfers, totalTransferAmount, tokens, gasToken: "AVAX" }
+  return { transfers, totalTransferAmount, tokens, gasToken: "AVAX" }
 }
 
 async function getValues() {

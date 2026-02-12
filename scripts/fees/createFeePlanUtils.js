@@ -225,7 +225,7 @@ function getRefTime() {
   }
 
   if (SKIP_VALIDATIONS !== "true" && refTimestamp > Date.now()) {
-    // throw new Error(`refTimestamp is later than current time ${refTimestamp}`)
+    throw new Error(`refTimestamp is later than current time ${refTimestamp}`)
   }
 
   const allowedDelay = 6 * 60 * 60 * 1000

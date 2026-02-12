@@ -43,9 +43,6 @@ const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 const ARB_MULTIPLIER = process.env.ARB_MULTIPLIER || 10000
 const AVAX_MULTIPLIER = process.env.AVAX_MULTIPLIER || 10000
 
-const ARB_MIN_GLP_PERCENTAGE = process.env.ARB_MIN_GLP_PERCENTAGE || 0
-const AVAX_MIN_GLP_PERCENTAGE = process.env.AVAX_MIN_GLP_PERCENTAGE || 0
-
 const SKIP_VALIDATIONS = process.env.SKIP_VALIDATIONS
 
 const allTokens = require('../core/tokens')
@@ -133,13 +130,15 @@ async function getArbFeeValues() {
   let feeKeeperGmxBalance = bigNumberify(0)
   let feeKeeperNativeTokenBalance = bigNumberify(0)
 
-  if (process.env.INCLUDE_FEE_KEEPER_BALANCE === "true") {
-    feeKeeperGmxBalance = await gmx.balanceOf(FEE_KEEPER)
-    feeKeeperNativeTokenBalance = await nativeToken.balanceOf(FEE_KEEPER)
-  }
+  // if (process.env.INCLUDE_FEE_KEEPER_BALANCE === "true") {
+  //   feeKeeperGmxBalance = await gmx.balanceOf(FEE_KEEPER)
+  //   feeKeeperNativeTokenBalance = await nativeToken.balanceOf(FEE_KEEPER)
+  // }
 
   const totalGmxBalance = withdrawableGmx.add(feeKeeperGmxBalance)
   const totalNativeTokenBalance = withdrawableNativeToken.add(feeKeeperNativeTokenBalance)
+  console.log("arb totalGmxBalance", totalGmxBalance.toString())
+  console.log("arb totalNativeTokenBalance", totalNativeTokenBalance.toString())
 
   const stakedGmx = await contractAt("Token", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F", signer)
   const stakedGmxSupply = await stakedGmx.totalSupply()
@@ -177,13 +176,16 @@ async function getAvaxFeeValues() {
   let feeKeeperGmxBalance = bigNumberify(0)
   let feeKeeperNativeTokenBalance = bigNumberify(0)
 
-  if (process.env.INCLUDE_FEE_KEEPER_BALANCE === "true") {
-    feeKeeperGmxBalance = await gmx.balanceOf(FEE_KEEPER)
-    feeKeeperNativeTokenBalance = await nativeToken.balanceOf(FEE_KEEPER)
-  }
+  // if (process.env.INCLUDE_FEE_KEEPER_BALANCE === "true") {
+  //   feeKeeperGmxBalance = await gmx.balanceOf(FEE_KEEPER)
+  //   feeKeeperNativeTokenBalance = await nativeToken.balanceOf(FEE_KEEPER)
+  // }
 
   const totalGmxBalance = withdrawableGmx.add(feeKeeperGmxBalance)
   const totalNativeTokenBalance = withdrawableNativeToken.add(feeKeeperNativeTokenBalance)
+
+  console.log("avax totalGmxBalance", totalGmxBalance.toString())
+  console.log("avax totalNativeTokenBalance", totalNativeTokenBalance.toString())
 
   const stakedGmx = await contractAt("Token", "0x4d268a7d4C16ceB5a606c173Bd974984343fea13", signer)
   const stakedGmxSupply = await stakedGmx.totalSupply()
@@ -238,102 +240,44 @@ async function saveFeePlan({ feeValues, refTimestamp }) {
   const values = feeValues
 
   const totalWethAvailable = values.arbitrum.totalNativeTokenBalance
-  const wethPrice = values.arbitrum.nativeTokenPrice
-
-  const treasuryChainlinkWethAmount = totalWethAvailable
-
-  let treasuryWethAmount = treasuryChainlinkWethAmount.mul(88).div(100).mul(ARB_MULTIPLIER).div(10000)
-  const chainlinkWethAmount = treasuryChainlinkWethAmount.mul(12).div(100)
+  let treasuryWethAmount = totalWethAvailable.mul(88).div(100).mul(ARB_MULTIPLIER).div(10000)
+  const chainlinkWethAmount = totalWethAvailable.mul(12).div(100)
 
   console.log("totalWethAvailable", totalWethAvailable.toString())
   console.log("treasuryWethAmount", treasuryWethAmount.toString())
   console.log("chainlinkWethAmount", chainlinkWethAmount.toString())
 
-  let remainingWeth = totalWethAvailable.sub((treasuryWethAmount).add(chainlinkWethAmount))
-  console.log("remainingWeth", remainingWeth.toString())
-
   const keeperCostsWeth = values.arbitrum.keeperCosts
   console.log("keeperCostsWeth", keeperCostsWeth.toString())
-  remainingWeth = remainingWeth.sub(keeperCostsWeth)
 
-  console.log("totalWethAvailable", totalWethAvailable.toString(), treasuryChainlinkWethAmount.toString())
-  const expectedGlpWethAmount = totalWethAvailable.sub(treasuryChainlinkWethAmount)
-  console.log("expectedGlpWethAmount", expectedGlpWethAmount.toString())
-  console.log("remainingWeth", remainingWeth.toString())
-
-  if (remainingWeth.lt(0)) {
-    if (treasuryWethAmount.lt(remainingWeth.abs())) {
-      throw new Error(`Insufficient treasuryWethAmount to cover costs ${treasuryWethAmount.toString()}, ${remainingWeth.toString()}`)
-    }
-
-    treasuryWethAmount = treasuryWethAmount.sub(remainingWeth.abs())
-    remainingWeth = bigNumberify(0)
+  if (keeperCostsWeth.gt(treasuryWethAmount)) {
+    await sendPushMessage(`Insufficient WETH for keeper top ups, keeper costs: ${formatAmount(keeperCostsWeth, 18, 4, true)}, treasury fees for the week: ${formatAmount(treasuryWethAmount, 18, 4, true)}`)
+    treasuryWethAmount = bigNumberify(0)
+  } else {
+    treasuryWethAmount = treasuryWethAmount.sub(keeperCostsWeth)
   }
 
-  console.log("remainingWeth after treasury subsidy", remainingWeth.toString())
+  console.log("adjusted treasuryWethAmount", treasuryWethAmount.toString())
 
-  if (expectedGlpWethAmount.gt(0)) {
-    const remainingPercentageWeth = remainingWeth.mul(100).div(expectedGlpWethAmount)
-    console.log("remainingPercentageWeth", remainingPercentageWeth.toString(), ARB_MIN_GLP_PERCENTAGE)
-    if (remainingPercentageWeth.lt(ARB_MIN_GLP_PERCENTAGE)) {
-      throw new Error(`GLP fees are less than ${ARB_MIN_GLP_PERCENTAGE} % of expected on Arbitrum. Adjust the multiplier.`)
-    }
-  }
+  const totalWavaxAvailable = values.avax.totalNativeTokenBalance
+  let treasuryWavaxAmount = totalWavaxAvailable.mul(88).div(100).mul(AVAX_MULTIPLIER).div(10000)
+  const chainlinkWavaxAmount = totalWavaxAvailable.mul(12).div(100)
 
-  let totalWavaxAvailable = values.avax.totalNativeTokenBalance
-  const wavaxPrice = values.avax.nativeTokenPrice
-  const totalWavaxUsdValue = totalWavaxAvailable.mul(wavaxPrice)
-
-  const treasuryChainlinkWavaxAmount = totalWavaxAvailable
-
-  // const maxTreasuryChainlinkWavaxAmount = v2FeesUsdAvax.mul(expandDecimals(1, 18)).div(wavaxPrice)
-  //
-  // console.log("treasuryChainlinkWavaxAmount", treasuryChainlinkWavaxAmount.toString())
-  // console.log("maxTreasuryChainlinkWavaxAmount", maxTreasuryChainlinkWavaxAmount.toString())
-  //
-  // if (treasuryChainlinkWavaxAmount.gt(maxTreasuryChainlinkWavaxAmount)) {
-  //   treasuryChainlinkWavaxAmount = maxTreasuryChainlinkWavaxAmount
-  // }
-
-  let treasuryWavaxAmount = treasuryChainlinkWavaxAmount.mul(88).div(100).mul(AVAX_MULTIPLIER).div(10000)
-  const chainlinkWavaxAmount = treasuryChainlinkWavaxAmount.mul(12).div(100)
-
-  let remainingWavax = totalWavaxAvailable.sub((treasuryWavaxAmount).add(chainlinkWavaxAmount))
+  console.log("totalWavaxAvailable", totalWavaxAvailable.toString())
+  console.log("treasuryWavaxAmount", treasuryWavaxAmount.toString())
+  console.log("chainlinkWavaxAmount", chainlinkWavaxAmount.toString())
 
   const keeperCostsWavax = values.avax.keeperCosts
   console.log("keeperCostsWavax", keeperCostsWavax.toString())
-  remainingWavax = remainingWavax.sub(keeperCostsWavax)
 
-  if (remainingWavax.lt(0)) {
-    if (treasuryWavaxAmount.gt(remainingWavax.abs())) {
-      treasuryWavaxAmount = treasuryWavaxAmount.sub(remainingWavax.abs())
-      remainingWavax = bigNumberify(0)
-    } else {
-      const wavax = new ethers.Contract("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", WETH.abi, providers.avax)
-      const feeHandlerWavaxBalance = await wavax.balanceOf("0x43CE1d475e06c65DD879f4ec644B8e0E10ff2b6D")
-      remainingWavax = remainingWavax.add(treasuryWavaxAmount)
-      if (remainingWavax.abs().gt(feeHandlerWavaxBalance)) {
-        throw new Error(`Insufficient feeHandlerWavaxBalance to cover costs ${feeHandlerWavaxBalance.toString()}, ${remainingWavax.toString()}`)
-      }
-      totalWavaxAvailable = totalWavaxAvailable.add(remainingWavax.abs())
-      treasuryWavaxAmount = bigNumberify(0)
-      remainingWavax = bigNumberify(0)
-    }
-  }
-
-  const expectedGlpWavaxAmount = totalWavaxAvailable.sub(treasuryChainlinkWavaxAmount)
-
-  if (expectedGlpWavaxAmount.gt(0)) {
-    const remainingPercentageWavax = remainingWavax.mul(100).div(expectedGlpWavaxAmount)
-    console.log("remainingPercentageWavax", remainingPercentageWavax.toString(), AVAX_MIN_GLP_PERCENTAGE)
-
-    if (remainingPercentageWavax.lt(AVAX_MIN_GLP_PERCENTAGE)) {
-      throw new Error(`GLP fees are less than ${AVAX_MIN_GLP_PERCENTAGE} % of expected on Avalanche. Adjust the multiplier.`)
-    }
+  if (keeperCostsWavax.gt(treasuryWavaxAmount)) {
+    await sendPushMessage(`Insufficient WAVAX for keeper top ups, keeper costs: ${formatAmount(keeperCostsWavax, 18, 4, true)}, treasury fees for the week: ${formatAmount(treasuryWavaxAmount, 18, 4, true)}`)
+    treasuryWavaxAmount = bigNumberify(0)
+  } else {
+    treasuryWavaxAmount = treasuryWavaxAmount.sub(keeperCostsWavax)
   }
 
   const totalArbGmxAvailable = values.arbitrum.totalGmxBalance
-
   const totalAvaxGmxAvailable = values.avax.totalGmxBalance
 
   const arbStaked = values.arbitrum.stakedGmxSupply
@@ -385,10 +329,6 @@ async function saveFeePlan({ feeValues, refTimestamp }) {
       arbitrum: keeperCostsWeth.toString(),
       avax: keeperCostsWavax.toString()
     },
-    glpRewards: {
-      arbitrum: remainingWeth.toString(),
-      avax: remainingWavax.toString()
-    },
     gmxRewards: {
       arbitrum: requiredArbGmxRewards.toString(),
       avax: requiredAvaxGmxRewards.toString()
@@ -407,14 +347,10 @@ async function saveFeePlan({ feeValues, refTimestamp }) {
 
   const expectedNativeTokenBalance = {
     arbitrum: bigNumberify(data.treasuryFees.arbitrum)
-      .add(data.chainlinkFees.arbitrum)
-      .add(data.keeperCosts.arbitrum)
-      .add(data.glpRewards.arbitrum),
+      .add(data.chainlinkFees.arbitrum),
 
     avax: bigNumberify(data.treasuryFees.avax)
-      .add(data.chainlinkFees.avax)
-      .add(data.keeperCosts.avax)
-      .add(data.glpRewards.avax),
+      .add(data.chainlinkFees.avax),
   }
 
   const expectedGmxTokenBalance = bigNumberify(data.gmxRewards.arbitrum).add(data.gmxRewards.avax)

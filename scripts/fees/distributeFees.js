@@ -239,12 +239,7 @@ async function fundAccountsForNetwork({ network, fundAccountValues }) {
     handler
   );
 
-  if (write) {
-    await sendTxn(
-      nativeToken.withdraw(totalTransferAmount, { gasLimit: 500_000 }),
-      `nativeToken.withdraw(${formatAmount(totalTransferAmount, 18, 2)})`
-    );
-  }
+  const nativeTokenLabel = network === "avax" : "AVAX" : "ETH"
 
   for (let i = 0; i < transfers.length; i++) {
     const transferItem = transfers[i];
@@ -253,7 +248,18 @@ async function fundAccountsForNetwork({ network, fundAccountValues }) {
       continue;
     }
 
+    const nativeTokenBalance = await nativeToken.balanceOf(handler.address)
+
+    if (nativeTokenBalance.lt(transferItem.amount)) {
+      await sendPushMessage(`Insufficient ${nativeTokenLabel}, skipping top up of ${formatAmount(transferItem.amount, 18, 2)} ${nativeTokenLabel} for ${transferItem.address}`)
+    }
+
     if (write) {
+      await sendTxn(
+        nativeToken.withdraw(transferItem.amount, { gasLimit: 500_000 }),
+        `nativeToken.withdraw(${formatAmount(transferItem.amount, 18, 2)})`
+      );
+
       await sendTxn(
         handler.sendTransaction({
           to: transferItem.address,
@@ -465,27 +471,27 @@ async function distributeFees({ write: _write, steps }) {
   }
 
   if (shouldRunFeeStep(steps, 3)) {
-    await fundAccounts();
+    await updateGmxRewards();
     await printFeeHandlerBalances();
     saveFeeStep(3)
-    await sendPushMessage("Step 3: Accounts funded")
+    await sendPushMessage("Step 3: GMX rewards updated")
   }
 
   if (shouldRunFeeStep(steps, 4)) {
-    await updateGmxRewards();
+    await sendPayments()
     await printFeeHandlerBalances();
     saveFeeStep(4)
-    await sendPushMessage("Step 4: GMX rewards updated")
+    await sendPushMessage("Step 4: Payments sent")
   }
 
   if (shouldRunFeeStep(steps, 5)) {
-    await sendPayments()
+    await fundAccounts();
     await printFeeHandlerBalances();
     saveFeeStep(5)
-    await sendPushMessage("Step 5: Payments sent")
+    await sendPushMessage("Step 5: Accounts funded")
   }
 
-    await sendPushMessage("Fee distribution completed")
+  await sendPushMessage("Fee distribution completed")
 }
 
 module.exports = { distributeFees };

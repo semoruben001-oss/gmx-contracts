@@ -13,8 +13,8 @@ const {
   AVAX_URL,
   ARBITRUM_DEPLOY_KEY,
   AVAX_DEPLOY_KEY,
-  PUSH_TOKEN,
-  PUSH_USER
+  TELEGRAM_FEE_DISTRIBUTION_GROUP_ID,
+  TELEGRAM_FEE_DISTRIBUTION_BOT_TOKEN
 } = require("../../env.json")
 
 const providers = {
@@ -45,24 +45,21 @@ const readCsv = async (file) => {
   return records
 }
 
-async function sendPushMessage(title, message) {
-  const url = "https://api.pushover.net/1/messages.json";
-
-  const params = {
-    token: PUSH_TOKEN,
-    user: PUSH_USER,
-    message,
-    title
-  };
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params)
-  });
-
+async function sendPushMessage(text) {
+  const res = await fetch(
+    `https://api.telegram.org/bot${TELEGRAM_FEE_DISTRIBUTION_BOT_TOKEN}/sendMessage`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_FEE_DISTRIBUTION_GROUP_ID,
+        text,
+        parse_mode: 'HTML',  // supports <b>, <i>, <code>, <a href="">
+      }),
+    }
+  );
   const data = await res.json();
-  console.log(data);
+  console.log("sendPushMessage", data)
 }
 
 

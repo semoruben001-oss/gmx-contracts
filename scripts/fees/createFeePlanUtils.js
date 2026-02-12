@@ -463,7 +463,7 @@ async function createFeePlan() {
   console.log("feeValues.gmxPrice", feeValues.gmxPrice.toString())
 
   await saveFeePlan({ feeValues, refTimestamp })
-  await sendPushMessage("Fee Plan Created", "Step 0")
+  await sendPushMessage("Step 0: Fee Plan Created")
 }
 
 module.exports = { createFeePlan };

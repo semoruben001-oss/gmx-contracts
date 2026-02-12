@@ -455,37 +455,37 @@ async function distributeFees({ write: _write, steps }) {
     await withdrawFees();
     await printFeeHandlerBalances();
     saveFeeStep(1)
-    await sendPushMessage("Step 1", "Fees withdrawn")
+    await sendPushMessage("Step 1: Fees withdrawn")
   }
 
   if (shouldRunFeeStep(steps, 2)) {
     await bridgeTokens()
     saveFeeStep(2)
-    await sendPushMessage("Step 2", "Tokens bridged")
+    await sendPushMessage("Step 2: Tokens bridged")
   }
 
   if (shouldRunFeeStep(steps, 3)) {
     await fundAccounts();
     await printFeeHandlerBalances();
     saveFeeStep(3)
-    await sendPushMessage("Step 3", "Accounts funded")
+    await sendPushMessage("Step 3: Accounts funded")
   }
 
   if (shouldRunFeeStep(steps, 4)) {
     await updateGmxRewards();
     await printFeeHandlerBalances();
     saveFeeStep(4)
-    await sendPushMessage("Step 4", "GMX rewards updated")
+    await sendPushMessage("Step 4: GMX rewards updated")
   }
 
   if (shouldRunFeeStep(steps, 5)) {
     await sendPayments()
     await printFeeHandlerBalances();
     saveFeeStep(5)
-    await sendPushMessage("Step 5", "Payments sent")
+    await sendPushMessage("Step 5: Payments sent")
   }
 
-    await sendPushMessage("Fee Distribution Update", "Fee distribution completed")
+    await sendPushMessage("Fee distribution completed")
 }
 
 module.exports = { distributeFees };

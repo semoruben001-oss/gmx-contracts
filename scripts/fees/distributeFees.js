@@ -239,7 +239,7 @@ async function fundAccountsForNetwork({ network, fundAccountValues }) {
     handler
   );
 
-  const nativeTokenLabel = network === "avax" : "AVAX" : "ETH"
+  const nativeTokenLabel = network === "avax" ? "AVAX" : "ETH"
 
   for (let i = 0; i < transfers.length; i++) {
     const transferItem = transfers[i];

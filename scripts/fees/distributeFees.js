@@ -329,7 +329,7 @@ async function updateGmxRewards() {
         // ExtendedGmxTracker
         rewardTracker: await contractAt("RewardTracker", "0x0755D33e45eD2B874c9ebF5B279023c8Bd1e5E93", feeKeepers.arbitrum),
         rewardToken: gmx.arbitrum,
-        transferAmount: bigNumberify(0), // feePlan.gmxRewards.arbitrum
+        transferAmount: feePlan.gmxRewards.arbitrum,
         customReceiver: "0x68863dDE14303BcED249cA8ec6AF85d4694dea6A"
       },
       // {
@@ -344,7 +344,7 @@ async function updateGmxRewards() {
         // ExtendedGmxTracker
         rewardTracker: await contractAt("RewardTracker", "0xB0D12Bf95CC1341d6C845C978daaf36F70b5910d", feeKeepers.avax),
         rewardToken: gmx.avax,
-        transferAmount: bigNumberify(0), // feePlan.gmxRewards.avax
+        transferAmount: feePlan.gmxRewards.avax,
         customReceiver: "0x0339740d92fb8BAf73bAB0E9eb9494bc0Df1CaFD"
       },
       // {
@@ -476,7 +476,7 @@ async function distributeFees({ write: _write, steps }) {
     await updateGmxRewards();
     await printFeeHandlerBalances();
     saveFeeStep(3)
-    await sendPushMessage("Fee Distribution: GMX rewards updated")
+    await sendPushMessage("Step 3: GMX rewards updated")
   }
 
   if (shouldRunFeeStep(steps, 4)) {

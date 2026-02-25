@@ -329,7 +329,8 @@ async function updateGmxRewards() {
         // ExtendedGmxTracker
         rewardTracker: await contractAt("RewardTracker", "0x0755D33e45eD2B874c9ebF5B279023c8Bd1e5E93", feeKeepers.arbitrum),
         rewardToken: gmx.arbitrum,
-        transferAmount: feePlan.gmxRewards.arbitrum
+        transferAmount: feePlan.gmxRewards.arbitrum,
+        customReceiver: "0x68863dDE14303BcED249cA8ec6AF85d4694dea6A"
       },
       // {
       //   // FeeGmxTracker
@@ -343,7 +344,8 @@ async function updateGmxRewards() {
         // ExtendedGmxTracker
         rewardTracker: await contractAt("RewardTracker", "0xB0D12Bf95CC1341d6C845C978daaf36F70b5910d", feeKeepers.avax),
         rewardToken: gmx.avax,
-        transferAmount: feePlan.gmxRewards.avax
+        transferAmount: feePlan.gmxRewards.avax,
+        customReceiver: "0x0339740d92fb8BAf73bAB0E9eb9494bc0Df1CaFD"
       },
       // {
       //   // FeeGmxTracker
@@ -478,17 +480,17 @@ async function distributeFees({ write: _write, steps }) {
   }
 
   if (shouldRunFeeStep(steps, 4)) {
-    await sendPayments()
-    await printFeeHandlerBalances();
-    saveFeeStep(4)
-    await sendPushMessage("Step 4: Payments sent")
+    // await sendPayments()
+    // await printFeeHandlerBalances();
+    // saveFeeStep(4)
+    // await sendPushMessage("Step 4: Payments sent")
   }
 
   if (shouldRunFeeStep(steps, 5)) {
-    await fundAccounts();
-    await printFeeHandlerBalances();
-    saveFeeStep(5)
-    await sendPushMessage("Step 5: Accounts funded")
+    // await fundAccounts();
+    // await printFeeHandlerBalances();
+    // saveFeeStep(5)
+    // await sendPushMessage("Step 5: Accounts funded")
   }
 
   await sendPushMessage("Fee distribution completed")

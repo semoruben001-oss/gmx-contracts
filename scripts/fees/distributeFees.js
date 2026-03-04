@@ -284,44 +284,44 @@ async function fundAccounts() {
 }
 
 async function updateGmxRewards() {
-  const gmxTokenBalance = {
-    arbitrum: await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address),
-    avax: await gmx.avax.balanceOf(feeKeepers.avax.address),
-  }
-
-  if (bigNumberify(feePlan.amountToBridgeFromAvalanche).gt(0)) {
-    while (true) {
-      if (gmxTokenBalance.arbitrum.gte(feePlan.gmxRewards.arbitrum)) {
-        break
-      }
-      console.log(`continue polling arbitrum gmx balance: ${gmxTokenBalance.arbitrum.toString()} < ${feePlan.gmxRewards.arbitrum}`)
-
-      await sleep(10_000)
-
-      gmxTokenBalance.arbitrum = await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address)
-    }
-  }
-
-  if (bigNumberify(feePlan.amountToBridgeFromArbritrum).gt(0)) {
-    while (true) {
-      if (gmxTokenBalance.avax.gte(feePlan.gmxRewards.avax)) {
-        break
-      }
-      console.log(`continue polling avax gmx balance: ${gmxTokenBalance.avax.toString()} < ${feePlan.gmxRewards.avax}`)
-
-      await sleep(10_000)
-
-      gmxTokenBalance.avax = await gmx.avax.balanceOf(feeKeepers.avax.address)
-    }
-  }
-
-  if (!skipBalanceValidations && gmxTokenBalance.arbitrum.lt(feePlan.gmxRewards.arbitrum)) {
-    throw new Error(`Insufficient gmxTokenBalance.arbitrum: ${gmxTokenBalance.arbitrum.toString()}, ${feePlan.gmxRewards.arbitrum}`)
-  }
-
-  if (!skipBalanceValidations && gmxTokenBalance.avax.lt(feePlan.gmxRewards.avax)) {
-    throw new Error(`Insufficient gmxTokenBalance.avax: ${gmxTokenBalance.avax.toString()}, ${feePlan.gmxRewards.avax}`)
-  }
+  // const gmxTokenBalance = {
+  //   arbitrum: await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address),
+  //   avax: await gmx.avax.balanceOf(feeKeepers.avax.address),
+  // }
+  //
+  // if (bigNumberify(feePlan.amountToBridgeFromAvalanche).gt(0)) {
+  //   while (true) {
+  //     if (gmxTokenBalance.arbitrum.gte(feePlan.gmxRewards.arbitrum)) {
+  //       break
+  //     }
+  //     console.log(`continue polling arbitrum gmx balance: ${gmxTokenBalance.arbitrum.toString()} < ${feePlan.gmxRewards.arbitrum}`)
+  //
+  //     await sleep(10_000)
+  //
+  //     gmxTokenBalance.arbitrum = await gmx.arbitrum.balanceOf(feeKeepers.arbitrum.address)
+  //   }
+  // }
+  //
+  // if (bigNumberify(feePlan.amountToBridgeFromArbritrum).gt(0)) {
+  //   while (true) {
+  //     if (gmxTokenBalance.avax.gte(feePlan.gmxRewards.avax)) {
+  //       break
+  //     }
+  //     console.log(`continue polling avax gmx balance: ${gmxTokenBalance.avax.toString()} < ${feePlan.gmxRewards.avax}`)
+  //
+  //     await sleep(10_000)
+  //
+  //     gmxTokenBalance.avax = await gmx.avax.balanceOf(feeKeepers.avax.address)
+  //   }
+  // }
+  //
+  // if (!skipBalanceValidations && gmxTokenBalance.arbitrum.lt(feePlan.gmxRewards.arbitrum)) {
+  //   throw new Error(`Insufficient gmxTokenBalance.arbitrum: ${gmxTokenBalance.arbitrum.toString()}, ${feePlan.gmxRewards.arbitrum}`)
+  // }
+  //
+  // if (!skipBalanceValidations && gmxTokenBalance.avax.lt(feePlan.gmxRewards.avax)) {
+  //   throw new Error(`Insufficient gmxTokenBalance.avax: ${gmxTokenBalance.avax.toString()}, ${feePlan.gmxRewards.avax}`)
+  // }
 
   const rewardArrList = {
     arbitrum: [

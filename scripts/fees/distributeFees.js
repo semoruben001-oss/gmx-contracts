@@ -487,7 +487,7 @@ async function distributeFees({ write: _write, steps }) {
   }
 
   if (shouldRunFeeStep(steps, 5)) {
-    // await fundAccounts();
+    await fundAccounts();
     // await printFeeHandlerBalances();
     // saveFeeStep(5)
     // await sendPushMessage("Step 5: Accounts funded")

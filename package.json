@@ -42,6 +42,7 @@
     "solidity-code-metrics": "^0.0.25",
     "@layerzerolabs/devtools": "~0.4.8",
     "@layerzerolabs/lz-v2-utilities": "^3.0.86",
-    "@layerzerolabs/metadata-tools": "^0.4.1"
+    "@layerzerolabs/metadata-tools": "^0.4.1",
+    "googleapis": "171.4.0"
   }
 }

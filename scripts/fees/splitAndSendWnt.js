@@ -15,44 +15,28 @@ const SAFE_WEIGHT = 270; // 27.0
 const TREASURY_WEIGHT = 88; // 8.8
 const CHAINLINK_WEIGHT = 12; // 1.2
 const TOTAL_WEIGHT = SAFE_WEIGHT + TREASURY_WEIGHT + CHAINLINK_WEIGHT;
+const BALANCE_DISTRIBUTION_FACTOR = 9500; // 95%
 
-const {
-  ARBITRUM_URL,
-  AVAX_URL,
-  HANDLER_KEY,
-} = require("../../env.json");
-
-
-const feeKeepers = {
-  arbitrum: new ethers.Wallet(FEE_KEEPER_KEY).connect(providers.arbitrum),
-  avax: new ethers.Wallet(FEE_KEEPER_KEY).connect(providers.avax),
-};
-
-const nativeTokens = {
-  arbitrum: new ethers.Contract(
-    require("../core/tokens")["arbitrum"].nativeToken.address,
-    MintableToken.abi,
-    feeKeepers.arbitrum
-  ),
-
-  avax: new ethers.Contract(
-    require("../core/tokens")["avax"].nativeToken.address,
-    MintableToken.abi,
-    feeKeepers.avax
-  ),
-};
+function getAmountToDistribute(amountInput, wntDecimals, balance) {
+  if (amountInput) {
+    return hre.ethers.utils.parseUnits(amountInput, wntDecimals);
+  }
+  return balance.mul(BALANCE_DISTRIBUTION_FACTOR).div(10000);
+}
 
 async function main() {
   const [signer] = await hre.ethers.getSigners();
 
-  const wnt = await contractAt(
-    "WETH",
-    nativeTokens[network].address,
+  const wntTokenInfo = require("../core/tokens")["arbitrum"].nativeToken;
+
+  const wnt = await hre.ethers.getContractAt(
+    "ERC20",
+    wntTokenInfo.address,
     signer
   );
 
   const balance = await wnt.balanceOf(signer.address);
-  const amount = amountInput ? hre.ethers.utils.parseUnits(amountInput, wnt.decimals) : balance;
+  const amount = getAmountToDistribute(amountInput, wntTokenInfo.decimals, balance);
 
   if (amount.lte(0)) {
     throw new Error("amount should be greater than 0");
@@ -60,9 +44,9 @@ async function main() {
 
   if (amount.gt(balance)) {
     throw new Error(
-      `insufficient WNT balance: amount ${formatAmount(amount, wnt.decimals, 6, true)} > balance ${formatAmount(
+      `insufficient WNT balance: amount ${formatAmount(amount, wntTokenInfo.decimals, 6, true)} > balance ${formatAmount(
         balance,
-        wnt.decimals,
+        wntTokenInfo.decimals,
         6,
         true
       )}`
@@ -81,15 +65,15 @@ async function main() {
   console.log("network: %s", hre.network.name);
   console.log("signer: %s", signer.address);
   console.log("WNT: %s", wnt.address);
-  console.log("wallet balance: %s", formatAmount(balance, wnt.decimals, 6, true));
-  console.log("amount to distribute: %s", formatAmount(amount, wnt.decimals, 6, true));
+  console.log("wallet balance: %s", formatAmount(balance, wntTokenInfo.decimals, 6, true));
+  console.log("amount to distribute: %s", formatAmount(amount, wntTokenInfo.decimals, 6, true));
   console.log("split ratio (safe:treasury:chainlink): 27:8.8:1.2");
-  console.log("safe      %s -> %s", safeAddress, formatAmount(safeAmount, wnt.decimals, 6, true));
-  console.log("treasury  %s -> %s", treasuryAddress, formatAmount(treasuryAmount, wnt.decimals, 6, true));
-  console.log("chainlink %s -> %s", chainlinkAddress, formatAmount(chainlinkAmount, wnt.decimals, 6, true));
+  console.log("safe      %s -> %s", safeAddress, formatAmount(safeAmount, wntTokenInfo.decimals, 6, true));
+  console.log("treasury  %s -> %s", treasuryAddress, formatAmount(treasuryAmount, wntTokenInfo.decimals, 6, true));
+  console.log("chainlink %s -> %s", chainlinkAddress, formatAmount(chainlinkAmount, wntTokenInfo.decimals, 6, true));
 
   if (!shouldWrite) {
-    const simulationSigner = wntContract.callStatic;
+    const simulationSigner = wnt.callStatic;
     await simulationSigner.transfer(safeAddress, safeAmount);
     await simulationSigner.transfer(treasuryAddress, treasuryAmount);
     await simulationSigner.transfer(chainlinkAddress, chainlinkAmount);
@@ -121,7 +105,7 @@ async function main() {
       continue;
     }
 
-    const tx = await wntContract.transfer(transfer.receiver, transfer.amount);
+    const tx = await wnt.transfer(transfer.receiver, transfer.amount);
     console.log("%s tx sent: %s", transfer.name, tx.hash);
     await tx.wait();
     console.log("%s tx confirmed", transfer.name);

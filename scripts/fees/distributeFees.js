@@ -141,8 +141,8 @@ function hasSavedFeeStep(step) {
     return false
   }
 
-  // 259200 => 3 days
-  return Date.now() - feeSteps[step] < 259200 * 1000
+  // 86400 => 1 day
+  return Date.now() - feeSteps[step] < 86400 * 1000
 }
 
 function shouldRunFeeStep(steps, step) {

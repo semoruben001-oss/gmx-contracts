@@ -37,6 +37,7 @@ const WETH = require("../../artifacts/contracts/tokens/WETH.sol/WETH.json")
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 const MILLISECONDS_PER_WEEK = 7 * MILLISECONDS_PER_DAY
+const DAILY_SENDING = true
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -216,19 +217,36 @@ async function getFeeValues() {
   }
 }
 
+function startOfTodayUTC() {
+  const now = new Date()
+  return Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate()
+  )
+}
+
 function getRefTime() {
-  const refTimestamp = roundToNearestWeek(Date.now(), 6)
-  const refDate = new Date(refTimestamp)
-  const dayName = DAY_NAMES[refDate.getDay()]
-  if (dayName !== "Wednesday") {
-    throw new Error(`unexpected day: ${dayName}`)
+  let refTimestamp;
+  let refDate;
+  if (DAILY_SENDING) {
+    refTimestamp = startOfTodayUTC();
+    refDate = new Date(refTimestamp)
+  } else {
+    refTimestamp = roundToNearestWeek(Date.now(), 6)
+    refDate = new Date(refTimestamp)
+
+    const dayName = DAY_NAMES[refDate.getDay()]
+    if (dayName !== "Wednesday") {
+      throw new Error(`unexpected day: ${dayName}`)
+    }
   }
 
   if (SKIP_VALIDATIONS !== "true" && refTimestamp > Date.now()) {
     throw new Error(`refTimestamp is later than current time ${refTimestamp}`)
   }
 
-  const allowedDelay = 6 * 60 * 60 * 1000
+  const allowedDelay = 24 * 60 * 60 * 1000 // 24 hrs
   if (refTimestamp < Date.now() - allowedDelay) {
     throw new Error(`refTimestamp is older than the allowed delay`)
   }
@@ -388,8 +406,10 @@ async function saveFeePlan({ feeValues, refTimestamp }) {
 
 async function createFeePlan() {
   const { refTimestamp } = getRefTime()
+  console.log(`refTimestamp: ${refTimestamp}`);
+
   if (feePlan && (refTimestamp - feePlan.refTimestamp) < 86400) {
-    console.log("Fee plan for week already exists")
+    console.log("Fee plan for day already exists")
     return
     // throw new Error("Fee plan for week already exists")
   }
@@ -399,7 +419,7 @@ async function createFeePlan() {
   console.log("feeValues.gmxPrice", feeValues.gmxPrice.toString())
 
   await saveFeePlan({ feeValues, refTimestamp })
-  await sendPushMessage("Step 0: Fee Plan Created")
+  // await sendPushMessage("Step 0: Fee Plan Created")
 }
 
 module.exports = { createFeePlan };

@@ -406,7 +406,6 @@ async function saveFeePlan({ feeValues, refTimestamp }) {
 
 async function createFeePlan() {
   const { refTimestamp } = getRefTime()
-  console.log(`refTimestamp: ${refTimestamp}`);
 
   if (feePlan && (refTimestamp - feePlan.refTimestamp) < 86400) {
     console.log("Fee plan for day already exists")
@@ -419,7 +418,7 @@ async function createFeePlan() {
   console.log("feeValues.gmxPrice", feeValues.gmxPrice.toString())
 
   await saveFeePlan({ feeValues, refTimestamp })
-  // await sendPushMessage("Step 0: Fee Plan Created")
+  await sendPushMessage("Step 0: Fee Plan Created")
 }
 
 module.exports = { createFeePlan };

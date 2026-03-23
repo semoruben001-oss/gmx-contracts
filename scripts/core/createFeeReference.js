@@ -69,7 +69,7 @@ function getRefTime() {
     throw new Error(`refTimestamp is later than current time ${refTimestamp}`)
   }
 
-  const allowedDelay = 6 * 60 * 60 * 1000
+  const allowedDelay = 24 * 60 * 60 * 1000
   if (refTimestamp < Date.now() - allowedDelay) {
     throw new Error(`refTimestamp is older than the allowed delay`)
   }

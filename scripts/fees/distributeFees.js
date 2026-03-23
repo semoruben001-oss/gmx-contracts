@@ -440,7 +440,7 @@ async function distributeFees({ write: _write, steps }) {
     );
   }
 
-  const allowedDelay = 6 * 60 * 60 * 1000;
+  const allowedDelay = 24 * 60 * 60 * 1000;
   if (feePlan.refTimestamp < Date.now() - allowedDelay) {
     throw new Error(`refTimestamp is older than the allowed delay`);
   }

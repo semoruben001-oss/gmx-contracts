@@ -1,8 +1,7 @@
 const prompts = require("prompts");
 const hre = require("hardhat");
 const { formatAmount } = require("../../test/shared/utilities");
-const MintableToken = require("../../artifacts-v2/contracts/mock/MintableToken.sol/MintableToken.json");
-const {contractAt} = require("../shared/helpers");
+const { writeToSheet } = require("./googleExport");
 
 const shouldWrite = process.env.WRITE === "true";
 const amountInput = process.env.AMOUNT;
@@ -94,9 +93,9 @@ async function main() {
   }
 
   const transfers = [
-    { receiver: safeAddress, amount: safeAmount, name: "safe" },
-    { receiver: treasuryAddress, amount: treasuryAmount, name: "treasury" },
-    { receiver: chainlinkAddress, amount: chainlinkAmount, name: "chainlink" },
+    { receiver: safeAddress, amount: safeAmount, name: "safe", tx: "" },
+    { receiver: treasuryAddress, amount: treasuryAmount, name: "treasury", tx: "" },
+    { receiver: chainlinkAddress, amount: chainlinkAmount, name: "chainlink", tx: "" },
   ];
 
   for (const transfer of transfers) {
@@ -108,9 +107,23 @@ async function main() {
     const tx = await wnt.transfer(transfer.receiver, transfer.amount);
     console.log("%s tx sent: %s", transfer.name, tx.hash);
     await tx.wait();
+    transfer.tx = tx.hash;
     console.log("%s tx confirmed", transfer.name);
   }
 
+  const txes = transfers.reduce((acc, transfer) => {return acc + "\n" + transfer.tx }, '')
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-GB');
+  await writeToSheet([
+    formattedDate,
+    "Arbitrum",
+    "WETH",
+    formatAmount(amount, wntTokenInfo.decimals, 6, true),
+    formatAmount(treasuryAmount, wntTokenInfo.decimals, 6, true),
+    formatAmount(safeAmount, wntTokenInfo.decimals, 6, true),
+    formatAmount(chainlinkAmount, wntTokenInfo.decimals, 6, true),
+    txes
+  ])
   console.log("done");
 }
 

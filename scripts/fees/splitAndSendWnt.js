@@ -2,6 +2,7 @@ const prompts = require("prompts");
 const hre = require("hardhat");
 const { formatAmount } = require("../../test/shared/utilities");
 const { writeToSheet } = require("./googleExport");
+const {sendTxn} = require("../shared/helpers");
 
 const shouldWrite = process.env.WRITE === "true";
 const amountInput = process.env.AMOUNT;
@@ -104,9 +105,10 @@ async function main() {
       continue;
     }
 
-    const tx = await wnt.transfer(transfer.receiver, transfer.amount);
-    console.log("%s tx sent: %s", transfer.name, tx.hash);
-    await tx.wait();
+    const tx = await sendTxn(
+      wnt.transfer(transfer.receiver, transfer.amount),
+      `wnt.transfer(${transfer.receiver}, ${formatAmount(amount, wntTokenInfo.decimals, 6, true)})`
+    );
     transfer.tx = tx.hash;
     console.log("%s tx confirmed", transfer.name);
   }
@@ -119,8 +121,8 @@ async function main() {
     "Arbitrum",
     "WETH",
     formatAmount(amount, wntTokenInfo.decimals, 6, true),
-    formatAmount(treasuryAmount, wntTokenInfo.decimals, 6, true),
     formatAmount(safeAmount, wntTokenInfo.decimals, 6, true),
+    formatAmount(treasuryAmount, wntTokenInfo.decimals, 6, true),
     formatAmount(chainlinkAmount, wntTokenInfo.decimals, 6, true),
     txes
   ])

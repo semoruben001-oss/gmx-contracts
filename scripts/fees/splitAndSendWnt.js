@@ -117,6 +117,7 @@ async function main() {
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-GB');
   await writeToSheet([
+    [
     formattedDate,
     "Arbitrum",
     "WETH",
@@ -125,6 +126,7 @@ async function main() {
     formatAmount(treasuryAmount, wntTokenInfo.decimals, 6, true),
     formatAmount(chainlinkAmount, wntTokenInfo.decimals, 6, true),
     txes
+    ]
   ])
   console.log("done");
 }

@@ -107,7 +107,7 @@ async function main() {
 
     const tx = await sendTxn(
       wnt.transfer(transfer.receiver, transfer.amount),
-      `wnt.transfer(${transfer.receiver}, ${formatAmount(amount, wntTokenInfo.decimals, 6, true)})`
+      `wnt.transfer(${transfer.receiver}, ${formatAmount(transfer.amount, wntTokenInfo.decimals, 6, true)})`
     );
     transfer.tx = tx.hash;
     console.log("%s tx confirmed", transfer.name);

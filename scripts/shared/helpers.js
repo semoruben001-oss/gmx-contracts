@@ -94,7 +94,7 @@ async function getFrameSigner(options) {
 
 async function waitForTxn(txn) {
   if (network === "arbitrum") {
-    await txn.wait(1)
+    await txn.wait(2)
   } else {
     await txn.wait(2)
   }

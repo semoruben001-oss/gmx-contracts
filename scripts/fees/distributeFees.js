@@ -54,8 +54,6 @@ const AVAX = "avax";
 const MEGA_ETH = "megaEth";
 const networks = [ARBITRUM, AVAX];
 
-const SKIP_VALIDATIONS = process.env.SKIP_VALIDATIONS
-
 const FEE_KEEPER_KEY = HANDLER_KEY;
 
 const treasuries = {
@@ -437,12 +435,6 @@ async function distributeFees({ write: _write, steps }) {
 
   const stepsToRun = steps.split(",");
   console.log("stepsToRun", stepsToRun);
-
-  if (SKIP_VALIDATIONS !== "true" && feePlan.refTimestamp > Date.now()) {
-    throw new Error(
-      `refTimestamp is later than current time ${feePlan.refTimestamp}`
-    );
-  }
 
   const allowedDelay = 24 * 60 * 60 * 1000;
   if (feePlan.refTimestamp < Date.now() - allowedDelay) {

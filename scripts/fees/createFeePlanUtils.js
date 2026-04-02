@@ -44,8 +44,6 @@ const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 const ARB_MULTIPLIER = process.env.ARB_MULTIPLIER || 10000
 const AVAX_MULTIPLIER = process.env.AVAX_MULTIPLIER || 10000
 
-const SKIP_VALIDATIONS = process.env.SKIP_VALIDATIONS
-
 const allTokens = require('../core/tokens')
 
 async function getGmxPrice(ethPrice) {
@@ -240,10 +238,6 @@ function getRefTime() {
     if (dayName !== "Wednesday") {
       throw new Error(`unexpected day: ${dayName}`)
     }
-  }
-
-  if (SKIP_VALIDATIONS !== "true" && refTimestamp > Date.now()) {
-    throw new Error(`refTimestamp is later than current time ${refTimestamp}`)
   }
 
   const allowedDelay = 24 * 60 * 60 * 1000 // 24 hrs

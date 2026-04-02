@@ -7,6 +7,7 @@ const tokens = require('../core/tokens')[network];
 const {
   ARBITRUM_URL,
   AVAX_URL,
+  MEGA_ETH_URL,
 } = require("../../env.json")
 
 async function getTransferItems(keepers, provider, network) {
@@ -154,6 +155,7 @@ async function getArbValues() {
 
   const transfers = await getTransferItems(keepers, provider, "arbitrum")
   const totalTransferAmount = await getTotalTransferAmount(transfers)
+  console.log(`Total transfer amount for arbitrum: ${formatAmount(totalTransferAmount, 18, 6)};`);
 
   return { transfers, totalTransferAmount, tokens, gasToken: "ETH" }
 }
@@ -270,8 +272,103 @@ async function getAvaxValues() {
 
   const transfers = await getTransferItems(keepers, provider, "avax")
   const totalTransferAmount = await getTotalTransferAmount(transfers)
+  console.log(`Total transfer amount for avax: ${formatAmount(totalTransferAmount, 18, 6)};`);
 
   return { transfers, totalTransferAmount, tokens, gasToken: "AVAX" }
+}
+
+
+async function getMegaEthValues() {
+  const provider = new ethers.providers.JsonRpcProvider(MEGA_ETH_URL)
+
+  const keepers = [
+    {
+      address: "0xDA1b841A21FEF1ad1fcd5E19C1a9D682FB675258", // relay keeper
+      targetFunds: "0.05"
+    },
+    {
+      address: "0xE47b36382DC50b90bCF6176Ddb159C4b9333A7AB", // v2 keeper 1
+      targetFunds: "1"
+    },
+    {
+      address: "0xC539cB358a58aC67185BaAD4d5E3f7fCfc903700", // v2 keeper 2
+      targetFunds: "1"
+    },
+    {
+      address: "0xf1e1B2F4796d984CCb8485d43db0c64B83C1FA6d", // v2 keeper 3
+      targetFunds: "1"
+    },
+    {
+      address: "0xdE10336a5C37Ab8FBfd6cd53bdECa5b0974737ba", // v2 keeper 4
+      targetFunds: "1"
+    },
+    {
+      address: "0x8808c5E5Bc9317Bf8cb5eE62339594b8d95f77df", // v2 keeper 5
+      targetFunds: "1"
+    },
+    {
+      address: "0x8E66ee36F2C7B9461F50aA0b53eF0E4e47F4ABBf", // v2 keeper 6
+      targetFunds: "1"
+    },
+    {
+      address: "0x6A2B3A13be0c723674BCfd722d4e133b3f356e05", // v2 keeper 7
+      targetFunds: "1"
+    },
+    {
+      address: "0xDd5c59B7C4e8faD38732caffbeBd20a61bf9F3FC", // v2 keeper 8
+      targetFunds: "1"
+    },
+    {
+      address: "0xEB2bB25dDd2B1872D5189Ae72fCeC9b160dD3FB2", // v2 keeper 9
+      targetFunds: "1"
+    },
+    {
+      address: "0xa17A86388BBcE9fd73a67F66D87FB0222A824c3f", // v2 keeper 10
+      targetFunds: "1"
+    },
+    {
+      address: "0x86fe53a6D47d9a0fDEA4C5Ac3D80E0E6CC3354cc", // v2 keeper 11
+      targetFunds: "1"
+    },
+    {
+      address: "0x8E2e2Dd583e7DB8437164A7F89A7288b999253CB", // v2 keeper 12
+      targetFunds: "1"
+    },
+    {
+      address: "0xC0a53a9Ee8E8ea0f585d8DcF26800EF2841f97fD", // v2 keeper 13
+      targetFunds: "1"
+    },
+    {
+      address: "0xd316a0043056fb787dE34ABA8cd5323f5C6f8c47", // v2 keeper 14
+      targetFunds: "1"
+    },
+    {
+      address: "0xB874e07336Edc0c278C276FfEb08818976099256", // v2 keeper 15
+      targetFunds: "1"
+    },
+    {
+      address: "0xa5E4a14CaB506bA102977648317E0622cA60BB64", // v2 keeper 16
+      targetFunds: "1"
+    },
+    {
+      address: "0xdAD787D5a86f37a5E480e35b3Ca615D46242Ce9B", // v2 keeper 17
+      targetFunds: "1"
+    },
+    {
+      address: "0x56a7CE61D8aB46A27De1837ceddd8522D52D2736", // v2 keeper 18
+      targetFunds: "1"
+    },
+    {
+      address: "0xC9A5775951F0ea25053fEe81D935FBBF4F0Fb273", // v2 keeper 19
+      targetFunds: "1"
+    },
+  ]
+
+  const transfers = await getTransferItems(keepers, provider, "megaEth")
+  const totalTransferAmount = await getTotalTransferAmount(transfers)
+
+  console.log(`Total transfer amount for megaEth: ${formatAmount(totalTransferAmount, 18, 6)};`);
+  return { transfers, totalTransferAmount, tokens, gasToken: "ETH" }
 }
 
 async function getValues() {
@@ -282,10 +379,15 @@ async function getValues() {
   if (network === "avax") {
     return await getAvaxValues()
   }
+
+  if (network === "megaEth") {
+    return await getMegaEthValues()
+  }
 }
 
 module.exports = {
   getArbValues,
   getAvaxValues,
+  getMegaEthValues,
   getValues
 }

@@ -12,6 +12,7 @@ const { sendEvm } = require("../shared/bridge")
 const {
   getArbValues: getArbFundAccountValues,
   getAvaxValues: getAvaxFundAccountValues,
+  getMegaEthValues: getMegaEthFundAccountValues,
 } = require("../shared/fundAccountsUtils");
 
 const {
@@ -50,9 +51,8 @@ const {
 
 const ARBITRUM = "arbitrum";
 const AVAX = "avax";
+const MEGA_ETH = "megaEth";
 const networks = [ARBITRUM, AVAX];
-
-const SKIP_VALIDATIONS = process.env.SKIP_VALIDATIONS
 
 const FEE_KEEPER_KEY = HANDLER_KEY;
 
@@ -141,8 +141,8 @@ function hasSavedFeeStep(step) {
     return false
   }
 
-  // 259200 => 3 days
-  return Date.now() - feeSteps[step] < 259200 * 1000
+  // 86400 => 1 day
+  return Date.now() - feeSteps[step] < 86400 * 1000
 }
 
 function shouldRunFeeStep(steps, step) {
@@ -277,10 +277,12 @@ async function fundAccounts() {
   const fundAccountValues = {
     arbitrum: await getArbFundAccountValues(),
     avax: await getAvaxFundAccountValues(),
+    megaEth: await getMegaEthFundAccountValues(),
   };
 
   await fundAccountsForNetwork({ network: ARBITRUM, fundAccountValues });
   await fundAccountsForNetwork({ network: AVAX, fundAccountValues });
+  // await fundAccountsForNetwork({ network: MEGA_ETH, fundAccountValues });
 }
 
 async function updateGmxRewards() {
@@ -434,13 +436,7 @@ async function distributeFees({ write: _write, steps }) {
   const stepsToRun = steps.split(",");
   console.log("stepsToRun", stepsToRun);
 
-  if (SKIP_VALIDATIONS !== "true" && feePlan.refTimestamp > Date.now()) {
-    throw new Error(
-      `refTimestamp is later than current time ${feePlan.refTimestamp}`
-    );
-  }
-
-  const allowedDelay = 6 * 60 * 60 * 1000;
+  const allowedDelay = 24 * 60 * 60 * 1000;
   if (feePlan.refTimestamp < Date.now() - allowedDelay) {
     throw new Error(`refTimestamp is older than the allowed delay`);
   }
@@ -487,7 +483,7 @@ async function distributeFees({ write: _write, steps }) {
   }
 
   if (shouldRunFeeStep(steps, 5)) {
-    // await fundAccounts();
+    await fundAccounts();
     // await printFeeHandlerBalances();
     // saveFeeStep(5)
     // await sendPushMessage("Step 5: Accounts funded")

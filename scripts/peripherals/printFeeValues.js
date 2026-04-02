@@ -12,7 +12,7 @@ async function main() {
     throw new Error(`refTimestamp is later than current time ${feeReference.refTimestamp}`)
   }
 
-  const allowedDelay = 10 * 60 * 60 * 1000
+  const allowedDelay = 24 * 60 * 60 * 1000
   if (feeReference.refTimestamp < Date.now() - allowedDelay) {
     throw new Error(`refTimestamp is older than the allowed delay`)
   }

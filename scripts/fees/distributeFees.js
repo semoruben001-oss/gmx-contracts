@@ -12,6 +12,7 @@ const { sendEvm } = require("../shared/bridge")
 const {
   getArbValues: getArbFundAccountValues,
   getAvaxValues: getAvaxFundAccountValues,
+  getMegaEthValues: getMegaEthFundAccountValues,
 } = require("../shared/fundAccountsUtils");
 
 const {
@@ -50,6 +51,7 @@ const {
 
 const ARBITRUM = "arbitrum";
 const AVAX = "avax";
+const MEGA_ETH = "megaEth";
 const networks = [ARBITRUM, AVAX];
 
 const SKIP_VALIDATIONS = process.env.SKIP_VALIDATIONS
@@ -277,10 +279,12 @@ async function fundAccounts() {
   const fundAccountValues = {
     arbitrum: await getArbFundAccountValues(),
     avax: await getAvaxFundAccountValues(),
+    megaEth: await getMegaEthFundAccountValues(),
   };
 
   await fundAccountsForNetwork({ network: ARBITRUM, fundAccountValues });
   await fundAccountsForNetwork({ network: AVAX, fundAccountValues });
+  // await fundAccountsForNetwork({ network: MEGA_ETH, fundAccountValues });
 }
 
 async function updateGmxRewards() {

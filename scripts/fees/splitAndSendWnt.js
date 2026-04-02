@@ -99,6 +99,9 @@ async function main() {
     { receiver: chainlinkAddress, amount: chainlinkAmount, name: "chainlink", tx: "" },
   ];
 
+  const baseNonce = await ethers.provider.getTransactionCount(signer.address);
+  let i = 0;
+
   for (const transfer of transfers) {
     if (transfer.amount.eq(0)) {
       console.log("skip %s transfer: 0 amount", transfer.name);
@@ -106,9 +109,12 @@ async function main() {
     }
 
     const tx = await sendTxn(
-      wnt.transfer(transfer.receiver, transfer.amount),
+      wnt.transfer(transfer.receiver, transfer.amount, {
+        nonce: baseNonce + i
+      }),
       `wnt.transfer(${transfer.receiver}, ${formatAmount(transfer.amount, wntTokenInfo.decimals, 6, true)})`
     );
+    i++;
     transfer.tx = tx.hash;
     console.log("%s tx confirmed", transfer.name);
   }

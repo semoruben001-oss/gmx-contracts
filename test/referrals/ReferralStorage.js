@@ -31,6 +31,7 @@ describe("ReferralStorage", function () {
       expandDecimals(1000, 18), // _maxTokenSupply
       50, // marginFeeBasisPoints 0.5%
       500, // maxMarginFeeBasisPoints 5%
+      []
     ])
   })
 

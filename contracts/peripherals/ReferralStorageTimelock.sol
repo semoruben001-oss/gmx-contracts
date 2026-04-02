@@ -27,7 +27,7 @@ import "../staking/interfaces/IRewardTracker.sol";
 import "../libraries/math/SafeMath.sol";
 import "../libraries/token/IERC20.sol";
 
-contract Timelock is ITimelock, BasicMulticall {
+contract ReferralStorageTimelock is ITimelock, BasicMulticall {
     using SafeMath for uint256;
 
     uint256 public constant PRICE_PRECISION = 10 ** 30;
@@ -62,7 +62,6 @@ contract Timelock is ITimelock, BasicMulticall {
     event SignalWithdrawToken(address target, address token, address receiver, uint256 amount, bytes32 action);
     event SignalMint(address token, address receiver, uint256 amount, bytes32 action);
     event SignalSetGov(address target, address gov, bytes32 action);
-    event SignalSetHandler(address target, address handler, bool isActive, bytes32 action);
     event SignalSetMinter(address target, address minter, bool isActive, bytes32 action);
     event SignalSetPriceFeed(address vault, address priceFeed, bytes32 action);
     event SignalSetGovRequester(address requester);
@@ -520,16 +519,7 @@ contract Timelock is ITimelock, BasicMulticall {
         ITimelockTarget(_target).setGov(_gov);
     }
 
-    function signalSetHandler(address _target, address _handler, bool _isActive) external onlyAdmin {
-        bytes32 action = keccak256(abi.encodePacked("setHandler", _target, _handler, _isActive));
-        _setPendingAction(action);
-        emit SignalSetHandler(_target, _handler, _isActive, action);
-    }
-
     function setHandler(address _target, address _handler, bool _isActive) external onlyAdmin {
-        bytes32 action = keccak256(abi.encodePacked("setHandler", _target, _handler, _isActive));
-        _validateAction(action);
-        _clearAction(action);
         IHandlerTarget(_target).setHandler(_handler, _isActive);
     }
 

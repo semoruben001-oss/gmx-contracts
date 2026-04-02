@@ -139,7 +139,8 @@ describe("PositionManager", function () {
         ethers.constants.AddressZero, // _rewardRouter
         expandDecimals(1000, 18), // _maxTokenSupply
         10, // _marginFeeBasisPoints
-        100 // _maxMarginFeeBasisPoints
+        100, // _maxMarginFeeBasisPoints
+        []
       ])
     }
   })
@@ -914,7 +915,8 @@ describe("PositionManager next short data calculations", function () {
       ethers.constants.AddressZero, // _rewardRouter
       expandDecimals(1000, 18), // _maxTokenSupply
       10, // _marginFeeBasisPoints
-      100 // _maxMarginFeeBasisPoints
+      100, // _maxMarginFeeBasisPoints
+      []
     ])
     await timelock.setContractHandler(positionManager.address, true)
     await timelock.setShouldToggleIsLeverageEnabled(true)

@@ -41,7 +41,8 @@ describe("TokenManager", function () {
       user1.address, // rewardRouter
       expandDecimals(1000, 18), // maxTokenSupply
       10, // marginFeeBasisPoints
-      100 // maxMarginFeeBasisPoints
+      100, // maxMarginFeeBasisPoints
+      []
     ])
 
     gmxTimelock = await deployContract("GmxTimelock", [

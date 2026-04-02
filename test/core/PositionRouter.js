@@ -71,6 +71,7 @@ describe("PositionRouter", function () {
       expandDecimals(1000, 18), // _maxTokenSupply
       10, // marginFeeBasisPoints 0.1%
       500, // maxMarginFeeBasisPoints 5%
+      []
     ])
 
     usdg = await deployContract("USDG", [vault.address])

@@ -83,6 +83,7 @@ describe("PriceFeedTimelock", function () {
       expandDecimals(1000, 18), // maxTokenSupply
       50, // marginFeeBasisPoints 0.5%
       500, // maxMarginFeeBasisPoints 5%
+      []
     ])
     await vault.setGov(vaultTimelock.address)
 

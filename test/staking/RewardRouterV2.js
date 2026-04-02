@@ -193,7 +193,8 @@ describe("RewardRouterV2", function () {
       rewardRouter.address, // _rewardRouter
       expandDecimals(1000000, 18), // _maxTokenSupply
       10, // marginFeeBasisPoints
-      100 // maxMarginFeeBasisPoints
+      100, // maxMarginFeeBasisPoints
+      []
     ])
 
     await rewardRouter.initialize([
@@ -2829,7 +2830,8 @@ describe("RewardRouterV2", function () {
       rewardRouter.address, // _rewardRouter
       expandDecimals(1000000, 18), // _maxTokenSupply
       10, // marginFeeBasisPoints
-      100 // maxMarginFeeBasisPoints
+      100, // maxMarginFeeBasisPoints
+      []
     ])
 
     await timelock.signalSetHandler(feeGlpTracker.address, burnerTimelock.address, true)

@@ -125,7 +125,7 @@ async function main() {
     "0xD2A54e7AFC36f6D09627c7c9ABdd033Ac3800613", // Tano
   ]
 
-  const timelock = await deployContract("Timelock", [
+  const timelock = await deployContract("ReferralStorageTimelock", [
     admin, // admin
     buffer, // buffer
     tokenManager.address, // tokenManager
@@ -137,11 +137,11 @@ async function main() {
     10, // marginFeeBasisPoints 0.1%
     40, // maxMarginFeeBasisPoints 5%
     handlers
-  ], "Timelock")
+  ], "ReferralStorageTimelock")
 
-  console.log("timelock deployed", timelock.address)
+  console.log("referral storage timelock deployed", timelock.address)
 
-  // const deployedTimelock = await contractAt("Timelock", timelock.address)
+  // const deployedTimelock = await contractAt("ReferralStorageTimelock", timelock.address)
 
   // const multicallWriteParams = []
 

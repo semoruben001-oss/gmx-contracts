@@ -99,6 +99,7 @@ describe("Timelock", function () {
       expandDecimals(1000, 18), // maxTokenSupply
       50, // marginFeeBasisPoints 0.5%
       500, // maxMarginFeeBasisPoints 5%
+      []
     ])
 
     await vault.setPriceFeed(vaultPriceFeed.address)
@@ -150,7 +151,8 @@ describe("Timelock", function () {
       user0.address, // rewardRouter
       1000, // maxTokenSupply
       10, // marginFeeBasisPoints
-      100 // maxMarginFeeBasisPoints
+      100, // maxMarginFeeBasisPoints
+      []
     ])).to.be.revertedWith("invalid _buffer")
   })
 
@@ -262,7 +264,8 @@ describe("Timelock", function () {
       user1.address, // _rewardRouter
       1000, // _maxTokenSupply
       10, // _marginFeeBasisPoints
-      100 // _maxMarginFeeBasisPoints
+      100, // _maxMarginFeeBasisPoints
+      []
     ])
     await expect(timelock0.connect(user0).setBuffer(3 * 24 * 60 * 60 - 10))
       .to.be.revertedWith("forbidden")
@@ -703,6 +706,7 @@ describe("Timelock", function () {
       expandDecimals(1000, 18), // maxTokenSupply
       50, // marginFeeBasisPoints 0.5%
       500, // maxMarginFeeBasisPoints 5%
+      []
     ])
 
     const newTimelock1 = await deployContract("Timelock", [
@@ -716,6 +720,7 @@ describe("Timelock", function () {
       expandDecimals(1000, 18), // maxTokenSupply
       50, // marginFeeBasisPoints 0.5%
       500, // maxMarginFeeBasisPoints 5%
+      []
     ])
 
     await timelock.setContractHandler(user0.address, true)

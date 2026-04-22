@@ -16,7 +16,7 @@ const TREASURY_WEIGHT = 88; // 8.8
 const CHAINLINK_WEIGHT = 12; // 1.2
 const TOTAL_WEIGHT = SAFE_WEIGHT + TREASURY_WEIGHT + CHAINLINK_WEIGHT;
 const BALANCE_DISTRIBUTION_FACTOR = 9500; // 95%
-const SEND_THRESHOLD = "6";
+const SEND_THRESHOLD = "5";
 
 function getAmountToDistribute(amountInput, wntDecimals, balance) {
   if (amountInput) {

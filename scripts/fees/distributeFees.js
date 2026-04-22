@@ -48,6 +48,7 @@ const {
   AVAX_URL,
   HANDLER_KEY,
 } = require("../../env.json");
+const {splitAndDistributeWnt} = require("./sendWntUtils");
 
 const ARBITRUM = "arbitrum";
 const AVAX = "avax";
@@ -486,7 +487,13 @@ async function distributeFees({ write: _write, steps }) {
     await fundAccounts();
     // await printFeeHandlerBalances();
     // saveFeeStep(5)
-    // await sendPushMessage("Step 5: Accounts funded")
+    await sendPushMessage("Step 5: Accounts funded")
+  }
+
+  if (shouldRunFeeStep(steps, 6)) {
+    await splitAndDistributeWnt();
+    saveFeeStep(6);
+    await sendPushMessage("Step 6: Payments sent")
   }
 
   await sendPushMessage("Fee distribution completed")

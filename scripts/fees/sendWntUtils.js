@@ -28,6 +28,8 @@ function getAmountToDistribute(amountInput, wntDecimals, balance) {
 async function splitAndDistributeWnt(isManual = false) {
   const [signer] = await hre.ethers.getSigners();
 
+  console.log(`Signer is: ${signer.address}`);
+
   const wntTokenInfo = require("../core/tokens")["arbitrum"].nativeToken;
 
   const wnt = await hre.ethers.getContractAt(

@@ -1,6 +1,6 @@
 const { spawn } = require("child_process");
 
-const child = spawn("npx", ["hardhat", "run", "scripts/fees/runFeeProcess.js"], {
+const child = spawn("npx", ["hardhat", "run", "scripts/fees/runFeeProcess.js", "--network",  "arbitrum"], {
   cwd: __dirname,
 });
 
